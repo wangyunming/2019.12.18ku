@@ -1,0 +1,264 @@
+<link rel="stylesheet" href="${base}/static/css/sidebar.css" type="text/css" media="screen"/>
+
+  <style>
+  	.td_top{font-size:12px;-webkit-transform-origin-x: 0;-webkit-transform: scale(0.75)}
+  	.td_center{font-size:12px;-webkit-transform-origin-x: 0;-webkit-transform: scale(0.9)}
+  	.td_bottom{font-size:12px;-webkit-transform-origin-x: 0;-webkit-transform: scale(0.7)}
+  	.font_size085{font-size:12px;-webkit-transform-origin-x: 0;-webkit-transform: scale(0.85)}
+  	.font_size065{font-size:12px;-webkit-transform-origin-x: 0;-webkit-transform: scale(0.65)}
+  </style>
+
+
+<div class="bjf7 p20 of">
+  <div class="user of">
+		 <#include "/layout/sidebar.ftl">
+	    <div class="user-con pb0" style="height:auto;overflow:hidden;">
+	  		<div class="right_con">
+					<div class="right_title">文件小助手</div>
+						<div style="font-size:17px;margin-top:20px">选择商品类别</div>
+						<!-- <table style="height:auto;overflow:hidden;">
+							<tr>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_1" onclick="nextStep(1)">
+										价格牌1start
+										<div style="width:101px;height:230px;position:relative;margin:auto;margin-top:15px">
+											  <img alt="" src="${base}/static/images/fileUpload/initial模板-01.png" style="width:101px;height:230px;">
+										</div>
+										价格牌1end
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：Initlal价格牌大</span></div>
+										<div style="margin-top:5px;"><span>尺寸：125mm*55mm</span></div>
+									</div>
+								</td>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_2" onclick="nextStep(2)">
+										<div style="width:150px;height:163.7px;position:relative;margin:auto;margin-top:40px">
+											  <img alt="" src="${base}/static/images/fileUpload/initial模板-02.png" style="width:150px;height:163.7px;">
+										</div>
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：Initlal价格牌小</span></div>
+										<div style="margin-top:5px;"><span>尺寸：60mm*55mm</span></div>
+									</div>
+								</td>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_3" onclick="nextStep(3)">
+										<div style="width:101px;height:230px;position:relative;margin:auto;margin-top:15px">
+											  <img alt="" src="${base}/static/images/fileUpload/initial模板-03.png" style="width:101px;height:230px;">
+										</div>									
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：Summer 2019 版合格证(大)</span></div>
+										<div style="margin-top:5px;"><span>尺寸：125mm*55mm</span></div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_4" onclick="nextStep(4)">
+										<div style="width:150px;height:163.7px;position:relative;margin:auto;margin-top:40px">
+											  <img alt="" src="${base}/static/images/fileUpload/initial模板-04.png" style="width:150px;height:163.7px;">
+										</div>
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：Summer 2019 版合格证(小)</span></div>
+										<div style="margin-top:5px;"><span>尺寸：60mm*55mm</span></div>
+									</div>
+								</td>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_5" onclick="nextStep(5)">
+										<div style="width:101px;height:230px;position:relative;margin:auto;margin-top:15px">
+											  <img alt="" src="${base}/static/images/fileUpload/initial模板-03.png" style="width:101px;height:230px;">
+										</div>									
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：Fall 2019 版合格证(大)</span></div>
+										<div style="margin-top:5px;"><span>尺寸：125mm*55mm</span></div>
+									</div>
+								</td>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_6" onclick="nextStep(6)">
+										<div style="width:150px;height:163.7px;position:relative;margin:auto;margin-top:40px">
+											  <img alt="" src="${base}/static/images/fileUpload/initial模板-04.png" style="width:150px;height:163.7px;">
+										</div>
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：Fall  2019 版合格证(小)</span></div>
+										<div style="margin-top:5px;"><span>尺寸：60mm*55mm</span></div>
+									</div>
+								</td>
+							</tr>
+							
+							<tr>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_7" onclick="nextStep(7)">
+										<div style="width:101px;height:230px;position:relative;margin:auto;margin-top:15px">
+											  <img alt="" src="${base}/static/images/fileUpload/initial模板-03.png" style="width:101px;height:230px;">
+										</div>									
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：2019新合格证(大)</span></div>
+										<div style="margin-top:5px;"><span>尺寸：125mm*55mm</span></div>
+									</div>
+								</td>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_8" onclick="nextStep(8)">
+										<div style="width:150px;height:163.7px;position:relative;margin:auto;margin-top:40px">
+											  <img alt="" src="${base}/static/images/fileUpload/initial模板-04.png" style="width:150px;height:163.7px;">
+										</div>
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：2019新合格证(小)</span></div>
+										<div style="margin-top:5px;"><span>尺寸：60mm*55mm</span></div>
+									</div>
+								</td>
+							</tr>
+							
+						</table> -->
+						
+						<!-- 去掉三个大合格证  加入两个新合格证 模板与fall合格证一样 -->
+						<table style="height:auto;overflow:hidden;">
+							<tr>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_1" onclick="nextStep(1)">
+										<!-- 价格牌1start -->
+										<div style="width:101px;height:230px;position:relative;margin:auto;margin-top:15px">
+											  <img alt="" src="${base}/static/images/fileUpload/initial模板-01.png" style="width:101px;height:230px;">
+										</div>
+										<!-- 价格牌1end -->
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：Initlal价格牌大</span></div>
+										<div style="margin-top:5px;"><span>尺寸：125mm*55mm</span></div>
+									</div>
+								</td>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_2" onclick="nextStep(2)">
+										<div style="width:150px;height:163.7px;position:relative;margin:auto;margin-top:40px">
+											  <img alt="" src="${base}/static/images/fileUpload/initial模板-02.png" style="width:150px;height:163.7px;">
+										</div>
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：Initlal价格牌小</span></div>
+										<div style="margin-top:5px;"><span>尺寸：60mm*55mm</span></div>
+									</div>
+								</td>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_9" onclick="nextStep(9)">
+										<div style="width:101px;height:230px;position:relative;margin:auto;margin-top:15px">
+											  <img alt="" src="${base}/static/images/fileUpload/chengyi1-hegezheng.png" style="width:101px;height:230px;">
+										</div>									
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：合格证 成衣 （非两件套）</span></div>
+										<div style="margin-top:5px;"><span>尺寸：125mm*55mm</span></div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_10" onclick="nextStep(10)">
+										<div style="width:101px;height:230px;position:relative;margin:auto;margin-top:15px">
+											  <img alt="" src="${base}/static/images/fileUpload/chengyi2-hegezheng.png" style="width:101px;height:230px;">
+										</div>									
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：合格证 成衣 （两件套）</span></div>
+										<div style="margin-top:5px;"><span>尺寸：125mm*55mm</span></div>
+									</div>
+								</td>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_4" onclick="nextStep(4)">
+										<div style="width:150px;height:163.7px;position:relative;margin:auto;margin-top:40px">
+											  <img alt="" src="${base}/static/images/fileUpload/initial模板-04.png" style="width:150px;height:163.7px;">
+										</div>
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：Summer 2019 版合格证(小)</span></div>
+										<div style="margin-top:5px;"><span>尺寸：60mm*55mm</span></div>
+									</div>
+								</td>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_6" onclick="nextStep(6)">
+										<div style="width:150px;height:163.7px;position:relative;margin:auto;margin-top:40px">
+											  <img alt="" src="${base}/static/images/fileUpload/initial模板-04.png" style="width:150px;height:163.7px;">
+										</div>
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：Fall  2019 版合格证(小)</span></div>
+										<div style="margin-top:5px;"><span>尺寸：60mm*55mm</span></div>
+									</div>
+								</td>
+							</tr>
+							
+							<tr>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_8" onclick="nextStep(8)">
+										<div style="width:150px;height:163.7px;position:relative;margin:auto;margin-top:40px">
+											  <img alt="" src="${base}/static/images/fileUpload/initial模板-04.png" style="width:150px;height:163.7px;">
+										</div>
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：2019新合格证(小)</span></div>
+										<div style="margin-top:5px;"><span>尺寸：60mm*55mm</span></div>
+									</div>
+								</td>
+								<td style="width:300px;height:350px;">
+									<div style="width:260px;height:260px;border:1px solid #D2D2D2;margin:auto" id="initial_7" onclick="nextStep(7)">
+										<div style="width:101px;height:230px;position:relative;margin:auto;margin-top:15px">
+											  <img alt="" src="${base}/static/images/fileUpload/initial模板-03.png" style="width:101px;height:230px;">
+										</div>									
+									</div>	
+									<div style="margin:10px 0px 0px 30px;font-size:13px">
+										<div><span>商品名称：ACC 大合格证</span></div>
+										<div style="margin-top:5px;"><span>尺寸：125mm*55mm</span></div>
+									</div>
+								</td>
+							</tr>
+							
+						</table>
+						
+						<hr style="height:1px;border:none;border-top:1px dashed #D2D2D2;" />
+						<div style="width:68px;height:23px;font-size:15px; border:1px solid #d90b19;text-align:center; margin:auto; line-height:23px; color:#d90b19; margin-bottom:10px;">
+							<a style="color:#d90b19;text-decoration:none;cursor:pointer;" id="next">下一步</a>
+						</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="${base}/static/js/jquery.min.js"></script>
+
+<script>
+	var b = 0;
+	function nextStep(a){
+		$("div[id^=initial_]").each(function(){
+			$(this).css("border","1px solid #D2D2D2");//移除 ID为two的对象的class名为divClass的样式。
+		})
+		$("#initial_"+a+"").css("border","1px solid red");
+		b = a;
+	}
+	
+	
+		$("#next").click(function(){
+			if(b == 0){
+				alert("请选择商品类别!");
+				return;
+			}
+			window.location="${base}/file-upload.html?id="+b;
+		})
+
+	
+
+</script>
+
+
+
+
+
+
+
+
+
+

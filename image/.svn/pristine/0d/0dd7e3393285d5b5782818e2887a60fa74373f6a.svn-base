@@ -1,0 +1,11 @@
+package com.haoyin.image.service;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.haoyin.image.util.alipay.PayResult;
+
+public interface DirectPayService {
+
+	PayResult alipayDirectPay(HttpServletRequest req, String string);
+
+}

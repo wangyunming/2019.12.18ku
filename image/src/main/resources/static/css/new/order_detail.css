@@ -1,0 +1,45 @@
+@charset "utf-8";
+/* CSS Document */
+
+.order_detial_main { width:1200px; background:#FFF; margin:auto; }
+
+.order_detail_content { padding:0px 50px; }
+.order_detail_content .line { border-bottom: 1px solid #ddd; height: 1px; }
+.detail_title { height:34px; line-height: 51px; }
+.detail_title .nub{ font-size:15px; color:#999;}
+.order_status { font-size: 19px; height: 140px; }
+.order_status .status_desc { color: #999; height: 60px; line-height: 60px; }
+.order_status .status_desc .status { color: #333; }
+.order_status .status_progress {width: 1100px; height:80px;}
+.order_status .status_progress .bar { background-color: #CCCCCC; border-radius: 15px; height: 20px; line-height: 20px; }
+.order_status .status_progress .bar > div { float: left; width: 220px; text-align: center; font-size: 12px; color: white; position: relative; }
+.order_status .status_progress .bar > .activity { background-color: #83c44e; }
+.order_status .status_progress .bar > .activity:first-child { border-top-left-radius: 15px; border-bottom-left-radius:15px; }
+.order_status .status_progress .bar > .activity.end { border-top-right-radius: 15px; border-bottom-right-radius:15px; }
+
+.order_status .status_progress .bar > div > .info { position: absolute; color: #999; top: 30px; width: 220px; }
+.order_status .status_progress .bar > div > .info > .bar_btn { width: 98px; height: 28px; border: 1px solid #999; display:block; line-height: 28px; background-color: #F2F2F2; margin:auto; margin-top:4px; color: black; color:#4c4c4c;}
+.order_status .status_progress .bar > div > .info > .bar_btn:hover { color: #4c4c4c; }
+
+.detail_content { padding-top: 20px; }
+.detail_content table { width: 1100px; }
+.detail_content table .t_title { height: 33px; line-height: 33px; background-color: #f0f0f0; color: #b2b2b2; text-align: center; }
+.detail_content table .t_content td { padding: 10px 0px; border-bottom: 1px solid #ddd; vertical-align: top; }
+.detail_content table .txt_line_height { line-height: 2.5; }
+
+.detail_content table .column1 { width: 400px; }
+.detail_content table .column1 .td_img { height: 80px; width: 80px; margin-right: 20px; }
+.detail_content table .column1 .td_img .img_vm img{max-width:80px; max-height:80px; text-align:center; vertical-align: middle; overflow: hidden;}
+.detail_content table .column1 .td_desc { width: 180px; }
+.detail_content table .column1 > div { float: left; }
+.detail_content table .column2 { width: 140px; text-align: center; }
+
+.content_block { padding-top: 25px; padding-bottom: 25px; }
+.content_block .content_title { font-size:18px; color:#333; }
+.content_block .content ul li { padding-top: 7px; font-size: 14px; color:#999;}
+.content_block .summaryContent { padding-bottom: 25px; }
+.content_block .summaryContent ul li { text-align: right; color: #333; }
+.content_block .summaryContent ul li > div{ display:inline-block; width: 160px; color: #d90b19; }
+.content_block .summaryContent .pay_price { font-size: 28px; }
+.content_block .summaryContent .number { padding-right: 3px; }
+.content_block .color_gray { color: #bbb; }

@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:mysql://192.168.1.98:3306/IMAGE-bootdo?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
+    username: root
+    password: haoyin31268366
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 5  
+    minIdle: 5
+    maxActive: 20  
+    maxWait: 60000
+server:
+   port: 8088
+localConfig:
+  fileUploadPath: /static/INITIAL
+  imageUploadPath: /static/haoyin_static
+  payImages: /payImages
+  imageUploadPathRead: http://test.static.haoyin.com
+yeepay:
+  redirectUrl: http://test.initial.haoyin.com/yeePay/sync.html
+  notifyUrl: http://27.115.101.98:48080/yeePay/notify.html

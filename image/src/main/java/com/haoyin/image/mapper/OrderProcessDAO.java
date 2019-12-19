@@ -1,0 +1,134 @@
+package com.haoyin.image.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import com.haoyin.image.entity.CommodityInfo;
+import com.haoyin.image.entity.CommodityType;
+import com.haoyin.image.entity.Order;
+import com.haoyin.image.entity.OrderItem;
+import com.haoyin.image.entity.OrderItemInfo;
+import com.haoyin.image.entity.ShoppingCartForm;
+import com.haoyin.image.entity.ShoppingCartItem;
+import com.haoyin.image.exception.DaoException;
+
+@Mapper
+public interface OrderProcessDAO {
+
+	/**
+	 * 查询商品类别
+	 * @return
+	 */
+	List<CommodityType> selectCommodityTypeList();
+	
+	/**
+	 * 根据ID查询商品类别
+	 * @param query
+	 * @return
+	 */
+	CommodityType selectCommodityTypeById(CommodityType query);
+	
+	
+	/**
+	 * 插入购物车
+	 */
+	Integer insertShoppingCartItem(ShoppingCartItem query);
+	
+	
+	/**
+	 * 插入文件商品信息表
+	 */
+	Integer insertFileCommodityInfoList(List<CommodityInfo> query);
+
+	List<ShoppingCartItem> selectCartItemForList(ShoppingCartItem shoppingCartItem) throws DaoException;
+
+	Integer updateShoppingCart(ShoppingCartForm cartForm) throws DaoException;
+	/**
+	 * 
+	 * @param shoppingCartId
+	 * @return
+	 * 删除购物车商品
+	 */
+	int delShoppingCartItemByItemId(Long shoppingCartId) throws DaoException;
+	/**
+	 * 查询购物车数量
+	 * @param itemQuery
+	 * @return
+	 * @throws DaoException
+	 */
+	int selectCartListCount(ShoppingCartItem itemQuery) throws DaoException;
+	
+	/**
+	 * 查询购物车
+	 */
+	List<ShoppingCartItem> selectShoppingCartList(ShoppingCartItem shoppingCartItem);
+	
+	/**
+	 * 插入订单
+	 */
+	Integer insertOrder(Order query);
+	
+	
+	/**
+	 * 插入订单条目
+	 */
+	Integer insertOrderItemforList(List<OrderItem> query);
+	
+	
+	/**
+	 * 根据订单ID查询订单条目
+	 */
+	List<OrderItem> selectOrderItemByOrderId(OrderItem orderItem);
+	
+	
+	/**
+	 * 插入订单条目
+	 */
+	Integer insertOrderItemInfoforList(List<OrderItemInfo> query);
+	
+	
+	/**
+	 * 根据条目ID查询订单条目商品信息
+	 */
+	OrderItem selectOrderByItemId(OrderItem orderItem) throws DaoException;
+	
+	
+	/**
+	 * 重新插入订单条目
+	 */
+	Integer insertReOrderItem(OrderItem query);
+	
+	/**
+	 * 根据ID删除订单
+	 */
+	Integer deleteOrderById(Long id);
+	
+	
+	/**
+	 * 根据ID删除订单条目
+	 */
+	Integer deleteOrderItemByItemId(Long id);
+	
+	
+	/**
+	 * 根据ID删除订单条目文件详情
+	 */
+	Integer deleteOrderItemInfoByItemId(Long id);
+	
+	
+	List<Order> selectOrderList();
+	
+	/**
+	 * 根据订单ID查询订单、订单条目、订单条目详情  单条
+	 */
+	OrderItemInfo selectItemInfoByOrderIdGroup(Long orderId);
+	
+	
+	/**
+	 * 更新订单
+	 */
+	Integer updateOrderGoOnById(Order query);
+	
+	
+}

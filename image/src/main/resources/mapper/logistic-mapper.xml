@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyin.image.mapper.LogisticDAO" >
+	
+	<resultMap type="delivery" id="Delivery">
+		<id column="ID" property="id"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="LINKMAN" property="linkman"/>
+		<result column="PROVINCE" property="province"/>
+		<result column="CITY_ID" property="cityId"/>
+		<result column="CITY" property="city"/>
+		<result column="DISTRICT" property="district"/>
+		<result column="ADDRESS" property="address"/>
+		<result column="TELEPHONE" property="telephone"/>
+		<result column="MOB_TEL" property="mobileTel"/>
+		<result column="EMAIL" property="email"/>
+		<result column="POSTALCODE" property="postalcode"/>
+		<result column="IS_DEFAULT" property="isDefault"/>
+	</resultMap>
+		
+	<insert id="insertDeliveryAddress" parameterType="district" flushCache="true" useGeneratedKeys="true" >
+		<![CDATA[
+			INSERT INTO DELIVER_ADDRESS (
+				USER_ID, LINKMAN, PROVINCE, CITY, DISTRICT, ADDRESS, TELEPHONE, MOB_TEL, 
+				 CREATE_GMT, MODIFIED_GMT, STATUS
+			) VALUES (
+				#{userId}, #{linkman}, #{province}, #{city}, #{district}, #{address}, 
+				#{telephone}, #{mobileTel}, NOW(), #{modifiedGmt}, 1
+			)
+		]]>
+		<selectKey keyProperty="id" order="AFTER" resultType="long">
+			<![CDATA[SELECT LAST_INSERT_ID() AS ID]]>
+		</selectKey>	
+	</insert>
+	<sql id="SELECT_SQL">
+		<![CDATA[
+		  SELECT ID, USER_ID, LINKMAN, PROVINCE, CITY_ID, CITY, DISTRICT, ADDRESS, TELEPHONE, MOB_TEL, EMAIL, 
+		  POSTALCODE, IS_DEFAULT FROM DELIVER_ADDRESS 
+		]]>
+	</sql>
+	<select id="queryDeliveryList" parameterType="deliveryQuery" resultMap="Delivery">
+		<include refid="SELECT_SQL"/>
+		<![CDATA[WHERE STATUS = 1 AND USER_ID = #{userId}]]>
+		<if test="isDefault != null"><![CDATA[AND IS_DEFAULT = #{isDefault} ]]></if>
+		<![CDATA[ORDER BY IS_DEFAULT DESC, CREATE_GMT DESC ]]>
+	</select>
+	
+	<select id="selectDeliveryById" parameterType="deliveryQuery" resultMap="Delivery">
+		<include refid="SELECT_SQL"/>
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="id != null" >AND ID = #{id}</if>
+		</trim>
+	</select>
+	
+	<update id="setAdreessDefault" parameterType="deliveryQuery">
+		<![CDATA[UPDATE DELIVER_ADDRESS]]>
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="linkman != null"><![CDATA[LINKMAN = #{linkman},]]></if>
+			<if test="province != null"><![CDATA[PROVINCE = #{province},]]></if>
+			<if test="city != null"><![CDATA[CITY = #{city},]]></if>
+			<if test="district != null"><![CDATA[DISTRICT = #{district},]]></if>
+			<if test="address != null"><![CDATA[ADDRESS = #{address},]]></if>
+			<if test="telephone != null"><![CDATA[TELEPHONE = #{telephone},]]></if>
+			<if test="mobileTel != null"><![CDATA[MOB_TEL = #{mobileTel},]]></if>
+			<if test="email != null"><![CDATA[EMAIL = #{email},]]></if>
+			<if test="postalcode != null"><![CDATA[POSTALCODE = #{postalcode},]]></if>
+			<if test="isDefault != null"><![CDATA[IS_DEFAULT = #{isDefault},]]></if>
+			<if test="status != null"><![CDATA[STATUS = #{status},]]></if>
+			<![CDATA[MODIFIED_GMT = NOW()]]>
+		</trim>
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="id != null"><![CDATA[ AND ID = #{id}]]></if>
+			<if test="userId != null"><![CDATA[ AND USER_ID = #{userId}]]></if>
+		</trim>
+		
+	</update>
+</mapper>

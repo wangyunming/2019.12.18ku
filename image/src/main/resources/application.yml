@@ -1,0 +1,41 @@
+spring:
+  profiles: 
+    active: pro
+  http:
+    encoding:
+      force: true
+      charset: UTF-8
+  jackson:
+     time-zone: GMT+8
+  freemarker:
+    request-context-attribute: request
+    cache: false
+    check-template-location: true
+    charset: UTF-8
+    content-type: text/html; charset=utf-8
+    expose-request-attributes: false
+    expose-session-attributes: true
+    expose-spring-macro-helpers: true
+    suffix: .ftl
+    template-loader-path: classpath:/templates
+  cache:
+    type: ehcache
+    ehcache:
+      config: ehcache.xml
+  mvc:
+    static-path-pattern: /static/**
+mybatis: 
+  mapper-locations: classpath*:mapper/*mapper.xml
+  type-aliases-package: com.haoyin.image.entity
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+  
+yeepay:
+  appKey: OPR:10027986612
+  merchantPrivateKey: MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDaNk9EPHxgJZaDgTENMkP6ZdQgbL6OmvIT7bg04NIHkTfDLCGsFHchbgL6LEhz/jwrQbEJo1yxLXDOiAMn9KaCCiumWo1YGjXR2gtpZZrJjfNpQyDWCXQlT/s+fEG8CwCg/MjRoEpc3KTTmnA09eife0VGVI/FhtcHBp8ih8XMNSua2A1GUj+GQjHLjrJJanm/OFyYKO1Bbg60HJu4XRflXLSIo8WgPfIYS/RwLRs8wLymKm057qAJbn3itpz356O7Ls6FWdNDXsqt02xPxgpMtTBKyQTPbHQIAGoo3IfcSs5ZSxII6MyYupqeUEOTZcz2jHJk6lAKkUvbTBdyEXSXAgMBAAECggEAA9ozmgvLUlM3jgjI2efKRXBox03EK3ZW0b0/pEdXzeRlbJ+p1ITj+YYcrVf8y3dwjn7xZi8pIsOfmzXRgHIUQnV1gdFVb3m++35y9yBhFC/aXUBfIwg1sbbww5CkBHLZRv5PeUvwJCWND2NJmdXBjpc5iN1TUHRp9WjLhGuLNWiuipI14a38tjfdKGZaHG5+Q0vB6r05A/xJBSAJhaIKnlYugDT+77UlK8xJC/ksow6Myh4PcDtJpSHTC+7/4yYnNj7KQyUn9YpcBY05gKgQcbgAdH6oS86aWZyegyHYo4JncFeHXZ1lQNcgCoHSPQSNwo2z796eFIda6KqH7EtWkQKBgQD33vdfd5qJhTiAzqB4MI14EGebhQbJi0canLtoH0T0SiKgxd83d61ZCr2leAiwS5mjHx4jQXpP03wVexzWRLSZaxQmv+XVJFe965F0t2VnFgs8hE8/G5k7eKqfD/65EMwCLkZTZbgNPuUnm0wW3+DM/6VFdjoo0hmqZAGcWp8frwKBgQDhXla7jM+FR+9/zzziFTB9ajhB9eVYxLBbG8rSUNaXBXoOzpslydjBjnNZT7aJbMv5TAEaVaqMvlyS8MXYz4MOpmVUXrHsRCEIy7eqn1UcEg6Wg6E0AmU4EeLuVTENjfmb/Tl4PpGweWP32au55uX2NIhd7QQ+a7Qo36EVytULmQKBgQCMc0O6TZw8Vkd4/RwCXoiawrjib5Mz+n50vuCWFDnPLn7GmLhtxptr++EP9J7/via1PnmmQoDa4JvL1DG328B1ui318wB5MJmjHOsTtqN3sQ724IXC3ZGLGEmdzcNo+/KNPclNkjKjFsNkGOQZhgvsPONaI6662KoAWaBsBxFpMwKBgFzMpdYwkzsEdgAg66cEpqTd2jB++mNlCmFZvlh/5Pzmym3ScVxMEy8QYzsBcd6AqDUNMN8RK1ss/52Z+z3dpM+hgNQO8iChpSCkEgr19OvMG6mqpfRukBNYeiM9fSdhsMikqsdyrDcIpTtnrCiuhT6uPwC+GiNB4jt6ajA5ByTxAoGBANMJAKjTMmIGYRZU45y/XMEE0MiEz8y8aiTeKj2Y9EW8ZpVe3qJ5mcxDpq9ELu5ewRKnuyI7ChBZkTLLi3AMqu2Bt0Ahjq1uV9ugfaTQPE0/vv3CP3IuEa3FAJGIH+bTLQwBdi4IBmALCPEv2fLQEnlv07RTu66WK/jyMJq2uRgO
+  merchantNo: 10027986612
+  CASHIER: https://cash.yeepay.com/cashier/std
+  merchantPublicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6p0XWjscY+gsyqKRhw9MeLsEmhFdBRhT2emOck/F1Omw38ZWhJxh9kDfs5HzFJMrVozgU+SJFDONxs8UB0wMILKRmqfLcfClG9MyCNuJkkfm0HFQv1hRGdOvZPXj3Bckuwa7FrEXBRYUhK7vJ40afumspthmse6bs6mZxNn/mALZ2X07uznOrrc2rk41Y2HftduxZw6T4EmtWuN2x4CZ8gwSyPAW5ZzZJLQ6tZDojBK4GZTAGhnn3bg5bBsBlw2+FLkCQBuDsJVsFPiGh/b6K/+zGTvWyUcu+LUj2MejYQELDO3i2vQXVDk7lVi2/TcUYefvIcssnzsfCfjaorxsuwIDAQAB

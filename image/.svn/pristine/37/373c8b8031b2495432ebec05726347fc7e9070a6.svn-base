@@ -1,0 +1,35 @@
+spring:
+  profiles: 
+    active: pro 	
+  http:
+    encoding:
+      force: true
+      charset: UTF-8
+  jackson:
+     time-zone: GMT+8
+  freemarker:
+    request-context-attribute: request
+    cache: false
+    check-template-location: true
+    charset: UTF-8
+    content-type: text/html; charset=utf-8
+    expose-request-attributes: false
+    expose-session-attributes: true
+    expose-spring-macro-helpers: true
+    suffix: .ftl
+    template-loader-path: classpath:/templates
+  cache:
+    type: ehcache
+    ehcache:
+      config: ehcache.xml
+  mvc:
+    static-path-pattern: /static/**
+mybatis: 
+  mapper-locations: classpath*:mapper/*mapper.xml
+  type-aliases-package: com.haoyin.image.entity
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+  

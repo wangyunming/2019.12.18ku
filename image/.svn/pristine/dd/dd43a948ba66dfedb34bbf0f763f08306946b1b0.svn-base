@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyin.image.mapper.FileDAO">
+	<resultMap type="excelInfo" id="fileResult">
+		<id column="ID" property="id" />
+		<result column="FILE_TYPE" property="fileType" />
+		<result column="UPLOAD_USER_ID" property="uploadUserId" />
+		<result column="UPLOAD_USERNAME" property="uploadUsername" />
+		<result column="STATUS" property="status" />
+		<result column="UPLOAD_TIME" property="uploadTime" />
+		<result column="FILE_NAME" property="fileName" />
+	</resultMap>
+
+	<select  id="selectFileList" parameterType="fileQuery" resultMap="fileResult" >
+		<![CDATA[
+		SELECT 
+		ei.ID ,
+		FILE_NAME,
+		u.Name as  UPLOAD_USERNAME ,
+		ei.STATUS ,
+		UPLOAD_TIME ,
+		FILE_TYPE 
+		FROM EXCEL_INFO ei 
+		INNER JOIN USER u ON  u.USER_ID=ei.UPLOAD_USER_ID
+		]]>
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+		<if test="fileType!=null"><![CDATA[AND ei.FILE_TYPE=#{fileType}]]></if>
+		<if test="uploadUsername != null and uploadUsername != '' "><![CDATA[AND u.NAME=#{uploadUsername}]]></if>
+		<if test="status!=null"><![CDATA[AND ei.STATUS=#{status}]]></if>
+		<if test="startTime!=null and startTime!='' "><![CDATA[AND UPLOAD_TIME >= #{startTime} ]]></if>
+		<if test="endTime!=null and endTime!='' "><![CDATA[AND UPLOAD_TIME <= #{endTime} ]]></if>
+		<if test="id!=null"><![CDATA[AND UPLOAD_USER_ID=#{id}]]></if>
+		<if test='fileName != null and fileName != ""'>
+	      		<![CDATA[ AND FILE_NAME LIKE CONCAT('%',#{fileName},'%') ]]>
+	     </if>
+		</trim>
+		order by UPLOAD_TIME desc
+	</select>
+	<update id="updateExcelStatus" parameterType="excelInfo" useGeneratedKeys="true" flushCache="true" >
+		<![CDATA[
+			UPDATE EXCEL_INFO
+		]]>
+		<trim prefix="SET" suffixOverrides="," >
+			<if test="status!=null"><![CDATA[STATUS=#{status}]]></if>
+		</trim>
+		WHERE ID=#{id}
+	</update>
+</mapper>

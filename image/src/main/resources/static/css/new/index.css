@@ -1,0 +1,67 @@
+@charset "utf-8";
+/* CSS Document */
+
+.unslider{overflow:auto;margin:0;padding:0}
+.unslider-wrap{position:relative}
+.unslider-wrap.unslider-carousel li{float:left}
+.unslider-vertical>ul{height:100%}
+.unslider-vertical li{float:none;width:100%}
+.unslider-fade{position:relative}
+.unslider-fade .unslider-wrap li{position:absolute;left:0;top:0;right:0;z-index:8}
+.unslider-fade .unslider-wrap li.unslider-active{z-index:10}
+.unslider li,.unslider ol,.unslider ul{list-style:none;margin:0;padding:0;border:none}
+.unslider-arrow{position:absolute;left:20px;z-index:2;cursor:pointer}
+.unslider-arrow.next{left:auto;right:20px}
+.unslider-nav { background: #f7f7f7 none repeat scroll 0 0; padding-top:20px; }
+.unslider-nav ol { list-style: none;  text-align: center; }
+.unslider-nav ol li { display: inline-block; width: 6px; height: 6px; margin: 0 4px; background: transparent; border-radius: 5px; overflow: hidden; text-indent: -999em; border: 2px solid #fff; cursor: pointer; }
+.unslider-nav ol li.unslider-active { background: #fff; cursor: default; }
+
+/*---首页---*/
+.home-banner{ width:100%; height:518px;}
+.home-main{ padding-top:20px; padding-bottom:45px;  background:#f7f7f7; overflow:hidden;}
+.home-main .home-box{ width:1200px; margin:0 auto;}
+.home-star div{ float:left;}
+.home-star .star-a img{ max-width:230px; max-height:310px; vertical-align:middle; text-align:center; overflow:hidden;}
+.home-star .star-b{ width:710px;}
+.home-floor .floor-title{ height:35px; padding-top:15px; padding-left:5px;}
+.home-floor .floor-title .floor-title-icon{ width:5px; height:20px; float:left;}
+.floor-title h1{ font-size:18px; margin:0 15px 0 10px; font-weight:normal; width:100px; text-align:left; float:left; color:#333;}
+.floor-title a{ color:#999; font-size:16px; text-decoration:underline; line-height:32px;float: right;margin-right: 10px;}
+.floor-title a:hover{ color:#d90b19;}
+.floor-diet{ width:230px; height:320px; margin:0px 5px 15px; background-color:#FFF; float:left;}
+.floor-diet .floor-diet-img{ max-height:230px; max-width:230px; overflow:hidden;vertical-align:middle; text-align:center;}
+.floor-diet .floor-diet-text{ text-align:center;}
+.floor-diet-text .floot-textaa{font-size:15px; width:230px; overflow:hidden; height:21px;}
+.floor-diet-text .floot-textaa a{ color:#333;}  .floot-textaa a:hover{ color:#d90b19;}
+.floor-diet-text .floot-textbb{width:230px; overflow:hidden; height:17px; margin:5px 0;}
+.floor-diet-text .floot-textbb a{ color:#bbb;} .floot-textbb a:hover{ color:#d90b19;}
+.floor-diet-text .floot-textcc{ color:#bbb;} 
+.floor-diet-text .floot-textcc .cc-color{ color:#ff3341; font-size:16px;}
+
+/*---积分商城---*/
+.p0{ padding-top:0;}
+.integral{ line-height:70px; color:666px; font-size:24px; margin-left:5px;}
+.integral .integral-span{ font-size:13px; margin-left:40px;}
+.integral .red{ color:#d90b19;}
+.floor-diet-text .integral-red{ color:#d90b19; font-size:20px; margin-top:5px;}
+.h350{ height:350px;}
+.floor-diet-text .integral-botton{ width:90px; height:30px; border:1px solid #d90b19; line-height:30px; color:#d90b19; margin:15px auto 0; }
+.floor-diet-text .integral-botton a{color:#d90b19;} .floor-diet-text .integral-botton a:hover{color:#d90b19;}
+.integral-page{ padding:20px 0 40px; width:200px; margin:auto;}
+
+
+/*--分页--*/
+/*---.page a{ display:block; width:30px; height:30px; line-height:28px; text-align:center; background:#FFF; float:left;}---*/
+.page .num{border:1px solid #ddd; margin-left:-1px;}
+.page .num:hover{background:#f7f7f7; color:#d90b19;}
+.page .num:active{ background:#f7f7f7; color:#d90b19;}
+.page .left{ background-image:url(/default/images/new/page-left.png); margin-right:10px; border:1px solid #ddd;}
+.page .right{ background-image:url(/default/images/new/page-right.png); margin-left:10px; border:1px solid #ddd;}
+
+/*--更多产品--*/
+.p-more .more-img{ position:relative;}
+.p-more .more-name{ width:330px; height:65px; background:#fff; border-bottom:3px solid #dedede; font-size:32px; text-align:center; line-height:65px; margin:auto; position:relative; top:-25px; padding:5px; overflow:hidden;}
+.more-space{margin-bottom: 20px;overflow: hidden;}
+
+.cur {cursor: pointer;}

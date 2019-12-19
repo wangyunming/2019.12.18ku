@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.haoyin.image.mapper.MenuDAO">
+	<resultMap type="menu" id="MenuResult">
+    <id column="ID" property="id" />
+    <result column="PARENT_ID" property="parentId" />
+    <result column="NAME" property="name" />
+    <result column="TYPE" property="type" />
+    <result column="IS_LEAF" property="isLeaf" />
+    <result column="SORT_ORDER" property="sortOrder" />
+    <result column="HREF" property="href" />
+    <result column="STYLE" property="style" />
+    <result column="TARGET" property="target" />
+    <result column="STATUS" property="status" />
+    <result column="GMT_CREATE" property="gmtCreate" />
+     <result column="LEVEL" property="level" />
+  </resultMap>
+  
+  <resultMap type="menu" id="MenuTreeResult">
+    <id column="ID" property="id" />
+    <result column="PARENT_ID" property="parentId" />
+    <result column="NAME" property="name" />
+    <result column="TYPE" property="type" />
+    <result column="IS_LEAF" property="isLeaf" />
+    <result column="HREF" property="href" />
+    <result column="STYLE" property="style" />
+    <result column="TARGET" property="target" />
+    <result column="LEVEL" property="level" />
+    
+    <collection property="subList" ofType="menu" column="ID" select="selectSubMenuForList"/>
+  </resultMap>
+  
+  <select id="findMenuTreeForList" resultMap="MenuTreeResult" >
+    <![CDATA[ 
+      SELECT ID, NAME, TYPE, PARENT_ID, IS_LEAF, SORT_ORDER, HREF, STYLE, TARGET
+      FROM BD_MENU WHERE STATUS = 1 AND PARENT_ID = 0 AND IS_LEAF = 0 ORDER BY SORT_ORDER
+    ]]>
+  </select>
+	
+  <select id="selectSubMenuForList" parameterType="long" resultMap="MenuTreeResult">
+    <![CDATA[ 
+      SELECT ID, NAME, PARENT_ID, TYPE, IS_LEAF, SORT_ORDER, HREF, STYLE, TARGET
+      FROM BD_MENU WHERE STATUS = 1 AND PARENT_ID = #{id} ORDER BY PARENT_ID, SORT_ORDER
+    ]]>
+  </select>	
+
+</mapper>

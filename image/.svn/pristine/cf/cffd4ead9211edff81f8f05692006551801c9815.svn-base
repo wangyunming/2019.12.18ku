@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.haoyin.image.mapper.UserLoginDAO">
+
+  <resultMap type="userLogin" id="UserLoginResult">
+    <result column="GMT_LOGIN" property="gmtLogin" />
+    <result column="USERNAME" property="loginUsername" />
+    <result column="LOGIN_HOST" property="loginHost" />
+    <result column="LOGIN_STATUS" property="loginStatus" />
+    <result column="REMARKS" property="remarks" />
+  </resultMap>
+	<insert id="saveUserLogin" parameterType="userLogin" flushCache="true">
+    <![CDATA[
+      INSERT INTO USER_LOGIN_LOG ( GMT_LOGIN, USERNAME, LOGIN_HOST, LOGIN_STATUS, REMARKS )
+      VALUES ( #{gmtLogin}, #{loginUsername}, #{loginHost}, #{loginStatus}, #{remarks} )
+    ]]>
+  </insert>
+  </mapper>

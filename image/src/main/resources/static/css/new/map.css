@@ -1,0 +1,20 @@
+
+@charset "utf-8";
+/* CSS Document */
+
+
+.pb90{ padding-bottom:100px;}
+.dot-title{ width:1200px; margin:auto; font-size:24px; color:#666; line-height:65px;}
+.dot{ width:1160px; padding:20px; background:#FFF; margin:auto; overflow:hidden;}
+.dot .dot-add{ height:480px; width:800px; float:left; border:1px solid #ddd; border-radius:5px;}
+#allmap { display:block; width:100%; height:100%;}
+.dot .dot-list{ float:right;width:336px; height:480px; border:1px solid #ddd; border-radius:3px; }
+.dot .dot-list .list-item{ background:#f2f2f2; padding:10px;}
+.dot .dot-list .list-item .dot-input{ width:305px; height:40px; color:#ccc;}
+.dot-list .list-itemb{ width:336px; height:408px; overflow-y: scroll; overflow-x: hidden;}
+.dot-list .list-itemb .item-info{ border-top:1px solid #ddd; padding:15px; overflow:hidden;}
+.dot-list .list-itemb .item-info .item-img{border:1px solid #ddd; border-radius:1px; float:left; margin-right:10px; cursor:pointer;}
+.dot-list .list-itemb .item-info .item-txt{ width:190px; height:80px; overflow:hidden;}
+.dot-list .list-itemb .item-info .item-txt p{ line-height:22px;}
+.dot-list .list-itemb .item-info .item-txt .color999{ color:#999;}
+.dot-list .list-itemb .item-last{ height:70px; background:#fbfbfb; text-align:center; border-top:1px solid #ddd; color:#ccc; line-height:22px;}

@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyin.image.mapper.OrderProcessDAO" >
+	<resultMap type="com.haoyin.image.entity.CommodityType" id="CommodityTypeResult">
+		<id column="ID" property="id"/>
+		<result column="COMMODITY_NAME" property="commodityName"/>
+		<result column="SIZE" property="size"/>
+		<result column="RE_PRICE" property="rePrice"/>
+		<result column="IMAGE_URL" property="imageUrl"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="TYPE" property="type"/>
+		<result column="SUPPLIER_PRICE" property="supplierPrice"/>
+	</resultMap>
+
+	<select id="selectCommodityTypeList"  resultMap="CommodityTypeResult">
+		select ID,COMMODITY_NAME,SIZE,RE_PRICE,IMAGE_URL,CREATE_TIME,TYPE from COMMODITY_TYPE
+		WHERE STATUS = 1
+	</select>
+	
+	<select id="selectCommodityTypeById" parameterType="commodityType"  resultMap="CommodityTypeResult">
+		select ID,COMMODITY_NAME,SIZE,RE_PRICE,IMAGE_URL,CREATE_TIME,TYPE,SUPPLIER_PRICE from COMMODITY_TYPE
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="id != null"><![CDATA[AND ID = #{id}]]></if>
+		</trim>
+	</select>
+	
+	
+		<!-- 插入购物车表 -->
+	<insert id="insertShoppingCartItem" parameterType="shoppingCartItem">
+		INSERT INTO SHOPPING_CART_ITEM(ITEM_ID,COMMODITY_NAME,NUMBER,RE_PRICE,FILE_NAME,FILE_URL,USER_ID,TOTAL_PRICE,SUPPLIER_PRICE,SUPPLIER_PRICE_TOTAL) 
+		VALUES
+		(#{itemId},#{commodityName},#{number},#{rePrice},#{fileName},#{fileUrl},#{userId},#{totalPrice},#{supplierPrice},#{supplierPriceTotal})
+	</insert>
+		
+	<!-- 插入文件商品信息表 -->
+	<insert id="insertFileCommodityInfoList" parameterType="commodityInfo">
+		INSERT INTO COMMODITY_INFO(ORDER_FILE_ID,COMMODITY_NAME,BATCH_NO,SPEC,QUANTITY,RE_PRICE) 
+		VALUES
+		<foreach collection="list" item="r" separator="," >
+		(#{r.orderFileId},#{r.commodityName},#{r.batchNo},#{r.commodityNo},#{r.spec},#{r.quantity},#{r.rePrice})
+		</foreach>
+	</insert>
+	<!-- 查询购物车列表  -->
+	<select id="selectCartItemForList" parameterType="shoppingCartItem" resultType="shoppingCartItem" >
+			<![CDATA[
+				SELECT 
+				ci.ID as id,  ci.ITEM_ID as itemId,ct.IMAGE_URL as fileUrl,   ci.COMMODITY_NAME as commodityName,ci.RE_PRICE as rePrice,
+				ci.NUMBER as number,ci.TOTAL_PRICE as totalPrice,ct.TYPE as type,ci.FILE_NAME as fileName		
+				FROM SHOPPING_CART_ITEM ci 
+				INNER JOIN commodity_type ct ON ci.ITEM_ID=ct.ID
+			]]>
+			<trim prefix="WHERE" prefixOverrides="AND| OR" suffixOverrides="," >
+				<if test="userId !=null ">USER_ID=#{userId}</if>
+			</trim>
+	</select>
+	<update id="updateShoppingCart" parameterType="shoppingCartForm" flushCache="true" >
+		<![CDATA[
+		UPDATE SHOPPING_CART_ITEM
+		]]>
+		<trim prefix="SET"  >
+			<if test="number != null and number !='' ">NUMBER=#{number},</if>
+			<if test="totalPrice !=null">TOTAL_PRICE=#{totalPrice}</if>
+		</trim>
+		<where>
+			<if test="id!=null">ID=#{id}</if>
+			<if test="itemId!=null">and ITEM_ID=#{itemId}</if>
+		</where>
+	</update>
+	<delete id="delShoppingCartItemByItemId" parameterType="long" flushCache="true">
+			<![CDATA[
+			DELETE 
+			FROM shopping_cart_item
+			]]>
+			<where>
+				ID=#{id}
+			</where>
+	</delete>
+	<!-- 查询购物车数量 -->
+	<select id="selectCartListCount" parameterType="shoppingCartItem" resultType="int" >
+			<![CDATA[
+				SELECT 
+				COUNT(1)
+				FROM shopping_cart_item
+			]]>
+			<where>
+				<if test="userId != null ">USER_ID=#{userId}</if>
+			</where>
+	</select>
+	
+	
+	<!-- 查询购物车列表  -->
+	<select id="selectShoppingCartList" parameterType="shoppingCartItem" resultType="shoppingCartItem" >
+			<![CDATA[
+				SELECT 
+				ci.ID as id,  ci.ITEM_ID as itemId,ci.FILE_URL as fileUrl,ci.FILE_NAME as fileName,   ci.COMMODITY_NAME as commodityName,ci.RE_PRICE as rePrice,ci.NUMBER as number,
+				ci.TOTAL_PRICE as totalPrice,ct.TYPE as type,ct.SIZE as size,ct.ID as commodityId,ci.SUPPLIER_PRICE as supplierPrice,ci.SUPPLIER_PRICE_TOTAL as supplierPriceTotal
+				FROM SHOPPING_CART_ITEM ci 
+				INNER JOIN commodity_type ct ON ct.ID = ci.ITEM_ID
+			]]>
+			<trim prefix="WHERE" prefixOverrides="AND |OR ">
+		      	<if test="cartList != null and cartList.size !=0" >
+		      	<![CDATA[ AND ci.ID IN]]>
+		      		<foreach collection="cartList" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+		      	</if>
+			</trim>
+	</select>
+	
+	
+	<!-- 插入订单 -->
+	<insert id="insertOrder" parameterType="order">
+		<![CDATA[INSERT INTO `ORDER`(ORDER_NO,ITEM_TYPE_NUM,USER_ID,USER_NAME,ORG_ID,ORG_NAME,SUBMIT_TIME,SCOUT_STATUS,SEND_STATUS,SEND_TIME,LINKMAN,PROVINCE,CITY,DISTRICT,
+		ADDRESS,TELEPHONE,MOB_TEL,EMAIL,POSTALCODE,DELIVER_TIME,LOGISTICS,FREIGHT_NO,CARRIAGE,AREA,TOTAL_WEIGHT,TOTAL_PRICE,
+		PAY_AMOUNT,PAY_MODE,PAY_TIME,PAY_TYPE,PAY_STATUS,INVOICE_ID,COMPLETE_TIME,REMARK,STATUS,SUPPLIER_PRICE_TOTAL,IMAGE_URL,IMAGE_NAME) 
+		VALUES
+		(#{orderNo},#{itemTypeNum},#{userId},#{userName},#{orgId},#{orgName},now(),#{scoutStatus},#{sendStatus},#{sendTime},#{linkman},#{province},#{city},#{district},
+		#{address},#{telephone},#{mobileTel},#{email},#{postalcode},#{deliverTime},#{logistics},#{freightNo},#{carriage},#{area},#{totalWeight},#{totalPrice},
+		#{payAmount},#{payMode},#{payTime},#{payType},#{payStatus},#{invoiceId},#{completeTime},#{remark},#{status},#{supplierPriceTotal},#{imageUrl},#{imageName})]]>
+		<selectKey keyProperty="id" order="AFTER" resultType="long">
+		  <![CDATA[SELECT LAST_INSERT_ID() AS ID]]>
+	    </selectKey>
+	</insert>
+	
+	
+		<!-- 插入订单条目表 -->
+	<insert id="insertOrderItemforList" parameterType="orderItem">
+		INSERT INTO order_item(ORDER_ID,COMMODITY_ID,COMMODITY_NAME,NUMBER,RE_PRICE,FILE_NAME,FILE_URL,TOTAL_PRICE) 
+		VALUES
+		<foreach collection="list" item="r" separator="," >
+		(#{r.orderId},#{r.commodityId},#{r.commodityName},#{r.number},#{r.rePrice},#{r.fileName},#{r.fileUrl},#{r.totalPrice})
+		</foreach>
+	</insert>
+	
+	
+		<!-- 根据ID查询订单条目表 -->
+	<select id="selectOrderItemByOrderId" parameterType="orderItem"  resultType="orderItem">
+		SELECT oi.ITEM_ID as itemId,oi.ORDER_ID as orderId,oi.COMMODITY_ID as commodityId,oi.COMMODITY_NAME as commodityName,oi.NUMBER as number,
+		oi.RE_PRICE rePrice,oi.FILE_NAME fileName,oi.FILE_URL fileUrl,oi.TOTAL_PRICE totalPrice ,ct.TYPE as type,ct.SIZE as size
+		from order_item oi
+		INNER JOIN commodity_type as ct ON ct.ID = oi.COMMODITY_ID
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="orderId != null"><![CDATA[AND oi.ORDER_ID = #{orderId}]]></if>
+		</trim>
+	</select>
+	
+	
+		<!-- 插入订单条目文件详情表 -->
+	<insert id="insertOrderItemInfoforList" parameterType="orderItemInfo">
+		INSERT INTO ORDER_ITEM_INFO(ITEM_ID,COMMODITY_ID,COMMODITY_NAME,BATCH_NO,COMMODITY_CODE,SPEC,QUANTITY,RE_PRICE,TOTAL_PRICE,COLOR,SIZE,CURRENCY) 
+		VALUES
+		<foreach collection="list" item="r" separator="," >
+		(#{r.itemId},#{r.commodityId},#{r.commodityName},#{r.batch},#{r.commodityCode},#{r.spec},#{r.number},#{r.rePrice},#{r.totalPrice},#{r.color},#{r.size},#{r.currency})
+		</foreach>
+	</insert>
+	
+		<!-- 根据条目ID查询订单条目商品信息 -->
+	<select id="selectOrderByItemId" parameterType="orderItem"  resultType="orderItem">
+		SELECT oi.ITEM_ID as itemId,oi.ORDER_ID as orderId,oi.COMMODITY_ID as commodityId,oi.COMMODITY_NAME as commodityName,oi.NUMBER as number,
+		oi.RE_PRICE rePrice,oi.FILE_NAME fileName,oi.FILE_URL fileUrl,oi.TOTAL_PRICE totalPrice ,ct.TYPE as type,ct.SIZE as size
+		from order_item oi
+		INNER JOIN commodity_type as ct ON ct.ID = oi.COMMODITY_ID
+		INNER JOIN `ORDER` as o ON o.ID = oi.ORDER_ID
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="itemId != null"><![CDATA[AND oi.ITEM_ID = #{itemId}]]></if>
+		</trim>
+		GROUP BY o.ID
+	</select>
+	
+	
+			<!-- 重新插入订单条目   -->
+	<insert id="insertReOrderItem" parameterType="orderItemInfo">
+		<![CDATA[INSERT INTO order_item(ORDER_ID,COMMODITY_ID,COMMODITY_NAME,NUMBER,RE_PRICE,FILE_NAME,FILE_URL,TOTAL_PRICE) 
+		VALUES
+		(#{orderId},#{commodityId},#{commodityName},#{number},#{rePrice},#{fileName},#{fileUrl},#{totalPrice})]]>
+		<selectKey keyProperty="itemId" order="AFTER" resultType="long">
+		  <![CDATA[SELECT LAST_INSERT_ID() AS ITEM_ID]]>
+	    </selectKey>
+	</insert>
+	
+	
+	<!-- 根据ID删除订单条目 -->
+	<delete id="deleteOrderItemByItemId" parameterType="long" flushCache="true">
+			<![CDATA[
+			DELETE 
+			FROM order_item
+			]]>
+			<where>
+				ITEM_ID=#{id}
+			</where>
+	</delete>
+	
+		<!-- 根据ID删除订单条目文件详情 -->
+	<delete id="deleteOrderItemInfoByItemId" parameterType="long" flushCache="true">
+			<![CDATA[
+			DELETE 
+			FROM order_item_info
+			]]>
+			<where>
+				ITEM_ID=#{id}
+			</where>
+	</delete>
+	
+		<!-- 根据ID删除订单条目文件详情 -->
+	<delete id="deleteOrderById" parameterType="long" flushCache="true">
+			<![CDATA[
+			DELETE 
+			FROM `ORDER`
+			]]>
+			<where>
+				ID=#{id}
+			</where>
+	</delete>
+	
+	
+	<!-- 根据订单ID查询订单、订单条目、订单条目详情  单条 -->
+	<select id="selectItemInfoByOrderIdGroup" parameterType="long" resultType="orderItemInfo" flushCache="true">	
+		<![CDATA[SELECT o.ID id,oi.ITEM_ID itemId,ii.ID as itemInfoId,ii.COMMODITY_ID as commodityId,ii.COMMODITY_NAME as commodityName,ii.SIZE as size,ii.CURRENCY as currency,
+		ii.BATCH_NO as batch,ii.COMMODITY_CODE as commodityCode,ii.SPEC as spec,ii.QUANTITY as number,oi.FILE_URL as fileUrl,ii.COLOR as color,TRACKING_NUMBER as trackingNum, 
+		ii.RE_PRICE as rePrice,ii.TOTAL_PRICE as totalPrice FROM 
+		`ORDER` o
+		INNER JOIN ORDER_ITEM oi ON oi.ORDER_ID = o.ID
+		INNER JOIN ORDER_ITEM_INFO ii ON oi.ITEM_ID = ii.ITEM_ID]]>
+		WHERE o.ID = #{orderId} GROUP BY o.ID
+	</select>
+	
+	
+		<update id="updateOrderGoOnById" parameterType="order" flushCache="true" >
+		<![CDATA[
+			UPDATE `ORDER`
+		]]>
+		<trim prefix="SET"  suffixOverrides="," >
+			<if test="linkman!=null">LINKMAN=#{linkman},</if>
+			<if test="province!=null">PROVINCE=#{province},</if>
+			<if test="city!=null">CITY=#{city},</if>
+			<if test="district!=null">DISTRICT=#{district},</if>
+			<if test="address!=null">ADDRESS=#{address},</if>
+			<if test="area!=null">AREA=#{area},</if>
+			<if test="logistics!=null">LOGISTICS=#{logistics},</if>
+			<if test="telephone!=null">TELEPHONE=#{telephone},</if>
+			<if test="mobileTel!=null">MOB_TEL=#{mobileTel},</if>
+			<if test="email!=null">EMAIL=#{email},</if>
+			<if test="postalcode!=null">POSTALCODE=#{postalcode},</if>
+			<if test="remark!=null">REMARK=#{remark},</if>
+			<if test="payMode!=null">PAY_MODE=#{payMode},</if>
+			<if test="payType!=null">PAY_TYPE=#{payType},</if>
+		</trim>
+		<where>
+			<if test="id!=null">ID=#{id}</if>		
+		</where>
+	</update>
+	
+
+</mapper>

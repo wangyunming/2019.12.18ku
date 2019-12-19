@@ -1,0 +1,15 @@
+
+@charset "utf-8";
+/* CSS Document */
+
+
+.footer-links{ width:1100px; margin:0 auto; padding-left:100px; padding-top:40px;}
+.footer-links dl{ float:left; width:25%; text-align:left;}
+.footer-links dt{ font-size:15px; font-weight:bold; color:#333; margin-bottom:10px;}
+.footer-links dd{ font-size:13px; color:#999; line-height: 24px;}
+.footer-links dd a{color:#999;} .footer-links dd a:hover{color:#d90b19;}
+/* .footer-info{ padding:30px 0; border-top:1px solid #eee; margin-top:30px; } */
+.footer-info .info-links{ width:1200PX; text-align:center; margin:10px auto;}
+.footer-info .info-links img{ cursor:pointer; margin-right:8px;}
+.footer-info .info-links img:last-child{margin-right:0px;} 
+

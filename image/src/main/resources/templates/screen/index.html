@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="refresh" content="0;url=/home.html">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>Hello!</h1>
+	<div id="msg_from_server">12222</div>
+	<script type="text/javascript" src="../js/jquery.js"></script>
+	<script type="text/javascript">
+		if(!!window.EventSource){
+			var source=new EventSource("/index");
+			s='';
+			source.addEventListener('message',function(event){
+				var date=event.data;
+				s+=data+'<br/>';
+				$("#msg_from_server").html(s);
+			});
+			source.addEventListener('open',function(){
+				console.log("连接打开");
+			},false);
+			source.addEventListener('error',function(){
+				console.log("链接出错");
+			},false)
+		}else{
+			alert("浏览器暂不支持SSE!");
+		}	
+	</script>
+</body>
+</html>

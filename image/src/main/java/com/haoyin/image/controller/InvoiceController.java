@@ -1,0 +1,234 @@
+package com.haoyin.image.controller;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
+import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.at.json.JSONObject;
+import com.github.pagehelper.PageInfo;
+import com.haoyin.image.entity.InvoiceInformation;
+import com.haoyin.image.entity.JSONResult;
+import com.haoyin.image.entity.Order;
+import com.haoyin.image.entity.OrderInvoice;
+import com.haoyin.image.entity.OrderItem;
+import com.haoyin.image.entity.OrderQuery;
+import com.haoyin.image.entity.UserProfile;
+
+import javassist.expr.NewArray;
+
+@Controller
+public class InvoiceController {
+	
+	@Autowired
+	private com.haoyin.image.service.InvoiceService InvoiceService;
+	
+	/**
+	 * 我要开票页面(按订单开票)
+	 * */
+	@RequestMapping("/invoice/makeInvoice.html")
+	public String makeInvoice(Model model){
+		OrderQuery query = new OrderQuery();
+		query.setUserId(getUser().getId());//只查询自己的订单
+		//按金额开票
+		List<Order> queryOrderForMakeInformation1 = InvoiceService.queryOrderForMakeInformation(query);
+		//定义按金额开票总值
+		//Double makeTotal=0D;
+		BigDecimal makeTotal = new BigDecimal(0);
+		for (int i = 0; i < queryOrderForMakeInformation1.size(); i++) {
+			//makeTotal+=Double.parseDouble(queryOrderForMakeInformation1.get(i).getPayAmount());
+			makeTotal = makeTotal.add(new BigDecimal(queryOrderForMakeInformation1.get(i).getPayAmount()));
+		}
+		OrderQuery query2 = new OrderQuery();
+		query2.setUserId(getUser().getId());//只查询自己的订单
+		//query2.setType(1);
+		//查询按订单已申请开票金额总和
+		//Double alreadyMake=0D;
+		BigDecimal alreadyMake = new BigDecimal(0);
+		PageInfo<InvoiceInformation> selectMakeInvoice = InvoiceService.selectMakeInvoice(query2);
+		List<InvoiceInformation> list1 = selectMakeInvoice.getList();
+		for (int i = 0; i < list1.size(); i++) {
+			//alreadyMake+=Double.parseDouble(list1.get(i).getInvMoney().equals("")?"0":list1.get(i).getInvMoney());
+			alreadyMake = alreadyMake.add(new BigDecimal(list1.get(i).getInvMoney().equals("")?"0":list1.get(i).getInvMoney()));
+		}
+		//按金额开票可开票金额
+		String canMake = makeTotal.subtract(alreadyMake).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+		//按订单开票
+		OrderQuery query3 = new OrderQuery();
+		query3.setInvoiceStatus(0);
+		query3.setUserId(getUser().getId());//只查询自己的订单
+		List<Order> queryOrderForMakeInformation = InvoiceService.queryOrderForMakeInformation(query3);//只查询待开票的
+		//将订单中的每个条目的商品名称查询出来，赋值到订单的商品信息中
+		Double total=0D;
+		for (int i = 0; i < queryOrderForMakeInformation.size(); i++) {
+			List<OrderItem> itemList = queryOrderForMakeInformation.get(i).getItemList();
+			String proName = "";
+			for (int j = 0; j < itemList.size(); j++) {
+				if (itemList.get(j).getCommodityName()!=null && itemList.get(j).getCommodityName()!="") {
+					proName+=itemList.get(j).getCommodityName()+",";
+				}
+			}
+			//当前可开票金额总和
+			if (queryOrderForMakeInformation.get(i).getPayAmount()!=null) {
+				total+=Double.parseDouble(queryOrderForMakeInformation.get(i).getPayAmount());
+			}
+			
+			if (proName.length()>1) {
+				proName=proName.substring(0, proName.length()-1);//去除字符串最后的元素
+			}
+			queryOrderForMakeInformation.get(i).setProductInfomation(proName);
+		}
+		
+		BigDecimal bigDecimal = new BigDecimal(total);
+		String totalMoney = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+		
+		OrderQuery query1 = new OrderQuery();
+		query1.setUserId(getUser().getId());
+		PageInfo<OrderInvoice> queryInvoiceInfo = InvoiceService.queryInvoiceInfo(query1);
+		List<OrderInvoice> list = queryInvoiceInfo.getList();
+		model.addAttribute("invoices",list);
+		model.addAttribute("totalMoney", totalMoney);
+		model.addAttribute("canMake", canMake);
+		model.addAttribute("information", queryOrderForMakeInformation);
+		model.addAttribute("size", queryOrderForMakeInformation.size());
+		return "screen/invoice/makeInvoice";
+	}
+	
+	/**
+	 * 我要开票页面提交
+	 * */
+	@ResponseBody
+	@RequestMapping("/invoice/makeInvoiceSubmit.html")
+	public JSONResult makeInvoiceSubmit(@RequestBody InvoiceInformation invoice,HttpServletRequest request,HttpServletResponse response){
+		
+		JSONResult result = new JSONResult();
+		try {
+			invoice.setCreateUserId(getUser().getId());
+			result.setObjAndSuccess(InvoiceService.addMakeInvoice(invoice));
+			response.getWriter().print(JSONObject.fromObject(result));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	/**
+	 * 开票记录页面
+	 * */
+	@RequestMapping("/invoice/invoiceRecords.html")
+	public String invoiceRecords(Model model){
+		OrderQuery query = new OrderQuery();
+		query.setUserId(getUser().getId());
+		PageInfo<InvoiceInformation> queryInvoiceInfo = InvoiceService.selectMakeInvoice(query);
+		List<InvoiceInformation> list = queryInvoiceInfo.getList();
+		model.addAttribute("invoices",list);
+		model.addAttribute("page", queryInvoiceInfo);
+		
+		return "screen/invoice/invoiceRecords";
+	}
+	
+	/**
+	 * 发票信息页面
+	 * */
+	@RequestMapping("/invoice/invoiceInformation.html")
+	public String invoiceInformation(Model model){
+		OrderQuery query = new OrderQuery();
+		query.setUserId(getUser().getId());
+		PageInfo<OrderInvoice> queryInvoiceInfo = InvoiceService.queryInvoiceInfo(query);
+		List<OrderInvoice> list = queryInvoiceInfo.getList();
+		model.addAttribute("invoices",list);
+		model.addAttribute("page", queryInvoiceInfo);
+		return "screen/invoice/invoiceInformation";
+	}
+	
+	/**
+	 * 添加发票信息
+	 * */
+	@ResponseBody
+	@RequestMapping("/invoice/addInvoiceInformation.html")
+	public JSONResult addInvoiceInformation(@RequestBody InvoiceInformation invoice,HttpServletRequest request,HttpServletResponse response){
+		
+		JSONResult result = new JSONResult();
+		try {
+			invoice.setCreateUserId(getUser().getId());
+			result.setObjAndSuccess(InvoiceService.addInvoiceInfomation(invoice));
+			response.getWriter().print(JSONObject.fromObject(result));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * 发票信息修改页面
+	 * */
+	@RequestMapping("/invoice/queryInvoiceInformationById.html")
+	public  @ResponseBody JSONResult queryInvoiceInformationById(Long id,HttpServletRequest request,HttpServletResponse response){
+		OrderQuery query = new OrderQuery();
+		query.setId(id);
+		PageInfo<OrderInvoice> queryInvoiceInfo = InvoiceService.queryInvoiceInfo(query);
+	try {
+		response.getWriter().print(JSONObject.fromObject(queryInvoiceInfo.getList().get(0)));
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	return null;
+	}
+	/**
+	 * 发票信息确认修改
+	 * */
+	@RequestMapping("/invoice/updateInvoiceInformation.html")
+	public JSONResult updateInvoiceInformation(@Valid InvoiceInformation invoice,HttpServletRequest request,HttpServletResponse response){
+		Integer updateInvoiceInformation = InvoiceService.updateInvoiceInformation(invoice);
+		boolean count=false;
+		if (updateInvoiceInformation>0) {
+			count=true;
+		}
+		try {
+			JSONResult result = new JSONResult();
+			result.setSuccess(count);
+			result.setMessage("success");
+			response.getWriter().print(JSONObject.fromObject(result));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	/**
+	 * 删除发票信息
+	 * */
+	@RequestMapping("/invoice/deleteInvoiceInformation.html")
+	public JSONResult deleteInvoiceInformation(@Valid Long id,HttpServletRequest request,HttpServletResponse response){
+		Integer deleteInvoiceInformation = InvoiceService.deleteInvoiceInformation(id);
+		boolean count=false;
+		if(deleteInvoiceInformation>0){
+			count=true;
+		}
+		JSONResult result = new JSONResult();
+		try {
+			result.setObjAndSuccess(count);
+			result.setMessage("success");
+			response.getWriter().print(JSONObject.fromObject(result));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private UserProfile getUser(){
+		return (UserProfile) SecurityUtils.getSubject().getSession().getAttribute("uus");
+	}
+	
+}

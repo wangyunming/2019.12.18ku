@@ -1,0 +1,63 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+.fcon2 {} .fcon2con{ width:1100px; margin:0 auto; padding:60px 0px;} .fcon2con-l { width:720px; border-right:1px solid #ddd;} 
+.fcon2con-l2{ width:650px; } 
+.fcon2con-r { margin-left:750px;}
+.fcon2con-r2 { margin-left:700px;}
+
+.fcon2con-l2 .ptit1, .fcon2con-l .ptit1 { padding:0px 0px 0px 50px;}
+.fcon2con-l .ptit2 { padding:0px 0px 0px 50px;} .fcon2con-l .ptit2 span{ float:left;} .fcon2con-l .ptit2 a { color:#006699;} .fcon2con-l .ptit2 a.login1{} .fcon2con-l .ptit2 a.login2{} .fcon2con-l .ptit2 a.login3{} .fcon2con-l .ptit2 a.login4{} .fcon2con-l .ptit3 { padding:10px 0px 0px 50px;}
+.fcon2con-l .dlreg dd {height:36px; margin:10px 0px 10px 0px; }
+.fcon2con-l .dlreg dd.w1 {height:18px;}
+.fcon2con-l .dlreg .item1 , .fcon2con-l .dlreg .item2 , .fcon2con-l .dlreg .item3 { display:block; float:left; }
+.fcon2con-l .dlreg .item1{ width:130px; padding:3px 10px 3px 0px; text-align:right; font-size:14px;}
+.fcon2con-l .dlreg .item2{ width:260px;} .fcon2con-l .dlreg .item2 input[type='text'] { width:240px;}
+.fcon2con-l .dlreg .item3{ color:#999999; padding:4px 0px 0px 0px; }
+.fcon2con-l .dlreg .itemsel { border:1px solid #999999;} .fcon2con-l .dlreg .itemwrg { border:2px solid #bb0000; color:#333333;}  .fcon2con-l .dlreg .itemwrgicon { padding-left:30px; color:#333333; } 
+.dlreg dd { clear:both; margin:20px 0px; overflow:hidden;}    
+.dlreg .item1 , .fcon2con-l .dlreg .item2 , .fcon2con-l .dlreg .item3 { display:block; float:left; }
+.dlreg .item1{ width:130px; padding:0px 10px 0px 0px; text-align:right; font-size:14px;}
+.dlreg .item2{ width:260px;} .fcon2con-l .dlreg .item2 input[type='text'] { width:240px;}
+.dlreg .item3{ color:#999999; padding:4px 0px 0px 0px; }
+.dlreg .itemsel { border:2px solid #999999;}
+.dlreg .itemwrg { border:2px solid #bb0000; color:#333333;}  .dlreg .itemwrgicon { padding-left:30px; color:#333333; } 
+.dlreg-ok2 { margin:0px 0px 0px 20px; width:600px; margin:auto; border:1px solid #ddd; padding:40px 40px;}
+.dlreg-ok2 p.line { margin:20px 0px; border-bottom:1px dashed  #cccccc; height:1px; line-height:1px;}
+.dlreg-ok2 a.dl { display:inline-block; background:#990000; color:#ffffff; padding:2px 20px;}
+.dlreg-okl { width:40px; height:40px; background:url(../images/hycon.png) no-repeat 0px -154px; margin:0px 0px 0px 20px;}
+.dlreg-okr { margin-left:100px;}
+.dlreg-ok { margin:20px 40px 0px 20px; padding:20px 10px; border-bottom:1px dashed #dddddd;}
+.dlreg-ok.dv1 { padding:20px 10px; border-bottom:1px dashed #dddddd;} .dlreg-ok.dv2 {}
+
+.dlreg-err{ background:url(/default/images/hycon.png) no-repeat;}
+
+/* 登录 */
+.fcon2con-l .ptit2 {margin-top:40px;}
+.fcon2con-l .ptit2 a.login1 , .fcon2con-l .ptit2 a.login2 , .fcon2con-l .ptit2 a.login3 , .fcon2con-l .ptit2 a.login4 { display:block; float:left;  padding:2px 4px 2px 26px;}
+
+.fcon2con-r{ margin-top:40px; padding:0px 0px 0px 20px; } .fcon2con-r .dl1 dt{ color:#e8251c; font-size:24px; font-weight:bold; padding:0px 0px 0px 30px;} .fcon2con-r .dl1 dd {padding:0px 0px 0px 30px; color:#333333; }
+.fcon2con-r2{ margin-top:40px; padding:0px 0px 0px 20px; }
+
+.qq {float:left;width:24px;height:24px;margin:0px 5px;background-image: url('/default/images/api/qq.png');}
+/** .qq:hover {background-image: url('/default/images/api/qq_hover.png');} */
+.sina {float:left;width:24px;height:24px;margin:0px 5px;background-image: url('/default/images/api/sina.png');}
+.alipay {float:left;width:24px;height:24px;margin:0px 5px;background-image: url('/default/images/api/alipay.jpg');}
+
+/* 找回密码 */
+.fcon3 {background: #f7f7f7;padding: 10px 0 100px;} .fcon3con { width:800px; margin:0 auto; padding:50px 200px; background:#fff;}
+.fcon3con-1 { padding:25px; border-bottom:1px solid #333; } .fcon3con-1 .ptit1 { width:150px; height:35px; border-right:1px solid #d6d6d6; padding:0px 25px 0px 0px;}
+.fcon3con-2 { padding:25px;} .fcon3con-2 .point1 { padding:10px 15px 10px 15px; color:#cc0000;} .fcon3con-2 .point1 .icon{ dispaly:inline-block; float:left; width:24px; height:24px;} .fcon3con-2 .point1 .con{ dispaly:inline-block; marin-left:24px;} .fcon3con-2 .notice1 { display:inline-block; height:16px; padding-left:20px; line-height:16px; }
+.imgpage6-2x1y1{} .imgpage6-2x1y2 , .imgpage6-2x1y3{ width:98px; height:28px;} .imgpage6-2x1y4 , .imgpage6-2x1y5 { width:135px; height:60px;} 
+.fcon3con-2 .get_code{height:30px; width:145px; line-height:30px; background: #f6f5fd; float:left; text-align:center; color: #bbb; margin-left:9px;cursor: pointer;}
+.fcon3con-2 .fail{background:#aaa; color:#fff;}
+
+
+
+.fcon2con-l .dlreg .itemwrgicon , .fcon2con-l .ptit2 a.login1 , .fcon2con-l .ptit2 a.login2 , .fcon2con-l .ptit2 a.login3 , .fcon2con-l .ptit2 a.login4 , .imgpagex1y6 , .imgpagex1y7 , .dl1 dt ,.imgpagex1y1 { background-image:url(../images/page6.png) ; background-repeat:no-repeat;}  /* page6.png - url path */
+.fcon2con-l .dlreg .itemwrgicon { background-position:0px 0px ;}  .fcon2con-l .ptit2 a.login1 { background-position:0px -31px;} .fcon2con-l .ptit2 a.login2 { background-position:0px -58px;} .fcon2con-l .ptit2 a.login3 { background-position:0px -84px;} .fcon2con-l .ptit2 a.login4 { background-position:0px -107px;}  .imgpagex1y6 { background-position:0px -134px;} .dl1 dt { background-position:0px -129px;} .imgpagex1y7 {background-position:0px -168px; }
+/* page6.png - position */
+
+.fcon3con-1 .ptit1 ,  .imgpage6-2x1y1 , .imgpage6-2x1y2 , .imgpage6-2x1y3 , .imgpage6-2x1y4 , .imgpage6-2x1y5 { background:url(../images/page6-2.jpg);}
+.imgpage6-2x1y2{ background-position:0px -42px;} .imgpage6-2x1y3 {  background-position:0px -70px;} .imgpage6-2x1y4 { background-position:0px -100px; margin: 0 100px 0 0;} .imgpage6-2x1y5 { background-position:0px -160px;}

@@ -1,0 +1,93 @@
+
+@charset "utf-8";
+/* CSS Document */
+
+
+.pd-top{ width:1200px; margin:auto; overflow:hidden; padding-bottom:25px;}
+.pd-top .nav li{ display:inline-block; margin-right:6px; font-size:13px; color:#666; height:35px; line-height:35px;}
+.pd-top .pd-gallery{ width:450px; float:left; margin-right:50px;}
+.pd-top .pd-gallery .pd-gallery-img{ margin-bottom:10px; }
+.pd-top .pd-gallery .pd-gallery-img img{max-height:450px; max-width:450px; overflow:hidden; text-align:center; vertical-align:middle; border: 1px solid  #dcdee0;}
+.pd-top .pd-gallery .pd-gallery-smallimg ul li{ float:left; }
+.pd-gallery .pd-gallery-smallimg .gallery-arrow{ border:1px #bbb solid; border-radius:3px; width:24px; height:73px; display:inline-block; background-color:#f7f7f7; background-image:url(/default/images/new/galleryleft.png); vertical-align:middle;}
+.pd-gallery .pd-gallery-smallimg .gallery-arrow:hover{ background-color:#efefef;}
+.pd-gallery .pd-gallery-smallimg .gallery-main{ max-width:388px; /*--max-height:75px;--*/ overflow:hidden;}
+.pd-gallery .pd-gallery-smallimg .gallery-main .gallery-pic img{max-height:75px; max-width:75px; overflow:hidden; text-align:center; vertical-align:middle;}
+.pd-gallery .pd-gallery-smallimg .gallery-pic{ margin-right:2px; display:inline-block; border: 1px solid #dcdee0;}
+.pd-gallery .pd-gallery-smallimg .arrow-right{ background-image:url(/default/images/new/galleryright.png);}
+.pd-gallery-smallimg .mr7{ margin-right:7px;}
+.pd-con{ float:left;}
+.pd-con .pd-con-title{ color:#666; font-size:18px; font-weight:bold;}
+.pd-con .pd-con-i{ margin-top:10px; font-size:14px; color:#d90b19;}
+.pd-con .pd-con-info{ width:480px; height:50px; background-color:#ebebeb; margin-top:15px; line-height:50px; color:#666;}
+.pd-con .pd-con-info div{ float:left; margin-right:25px;}
+.pd-con .pd-con-info .style-a{ color:#d90b19;} .pd-con .pd-con-info .f24{ font-size:20px;}
+.pd-con .pd-con-info .style-b{display: inline-block; height: 35px; overflow: hidden; width:105px;}
+
+.pd-con .pd-con-choice{ overflow:hidden; padding:20px 0 5px; border-bottom:1px dashed #bbb; width:480px;}
+.pd-con-choice .choice-list{ margin-bottom:7px; overflow:hidden;}
+.pd-con-choice .choice-list .choice-list-txt{ width:55px; float:left; height:36px; line-height:36px; text-align:right; margin-right:3px; color:#999;}
+.pd-con-choice .choice-list .info_btn_group{width:420px; float:left;}
+.pd-con-choice .choice-list .choice-list-add{ color:#999;}
+.pd-con-choice .choice-list .choice-list-add a{color:#999; text-decoration:underline;}
+.pd-con-choice .choice-list .choice-list-add a:hover{ color:#d90b19;}
+
+.item-info{overflow:hidden; padding-top: 5px; color:#4c4c4c;}
+.item-info .item-img{border:1px solid #ddd; border-radius:1px; float:left; margin-right:10px; cursor:pointer;}
+.item-info .item-txt{ width:190px; height:80px; overflow:hidden;}
+.item-info .item-txt p{ line-height:20px;}
+.item-info .item-txt .color999{ color:#999;}
+
+.pd-con .pd-con-botton{ padding-top:20px; overflow:hidden;}
+.pd-con-botton .w180{ width:180px;} .pd-con-botton .w178{ width:178px;}
+
+.outer_border { border: 1px solid #dcdee0; }
+.border_active > .outer_border { border: 1px solid #f21827; }
+.outer_border > .inner_border { border: 3px solid #FAFAFA; background-color: #FAFAFA; }
+.border_active > .outer_border > .inner_border { border: 3px solid #ffcccf!important; background-color: #FFFFFF!important; }
+.outer_border:hover > .inner_border { border: 3px solid #F0F0F0; background-color: #F0F0F0; }
+.info_btn_group > .info_btn { height:36px; width: 100px; overflow:hidden; cursor: pointer; float: left; margin:0px 8px 8px 0px; text-align: center;}
+.info_btn_group > .common_btn { width: 200px; line-height:50px; background-color: #3d97f2; color: #FFFFFF; font-size: 16px; }
+.info_btn_group > .info_btn .outer_border > .inner_border  > div { line-height: 28px; height: 28px; width: 93px; position:relative;}
+.info_btn_group > .info_btn_small { height: 35px; width: 120px; overflow:hidden; }
+.info_btn_group > .info_btn_small .outer_border > .inner_border  > div { line-height: 27px; height: 27px; width: 112px; }
+.info_btn_group > .disable_btn { color: #CCC; cursor:default; }
+.info_btn_group > .disable_btn > .outer_border > .inner_border{ border-color: #FAFAFA; background-color: #FAFAFA; }
+.inner_border .border_active_icon{ position:absolute; bottom:0; right:0; display: none;}
+.border_active .inner_border .border_active_icon{ display: block;}
+
+.SQ_w130 .Price{ line-height:20px;  width:40px;}
+.SQ_w130 .delivery{ width:40px; line-height:18px; border-radius:0; float:left; text-align:center;}
+.SQ_w130 .dynamic{ width:90px; line-height:18px; border-radius:0; float:left; text-align:center;}
+.SQ_w130 a{ font-size:20px; font-weight:bold; color:#aaa; width:28px; height:28px; line-height:24px; border:1px solid #dddddd;  display:block; float:left; color:#4c4c4c; text-align: center; background:#FFF;}
+.SQ_w130 .cuts{ border-right:none; } .SQ_w130 .plus{ border-left:none;}
+.SQ_w130 a:hover{ background:#f7f7f7;}
+
+.pd-centent{  width:1200px; margin:auto; overflow: hidden; }
+.pd-centent .leftsidebar{ display: inline-block; width:100px; height:auto; border-radius:5px; border:2px solid #d90b19; background:#FFF; margin-top: 10px; }
+ 
+.pd-centent .leftsidebar a{ display:block; width:70px; border-bottom:1px solid #e0e0e0; line-height:30px; text-align:center; color:#666; height:30px; margin-left:15px;}
+.pd-centent .leftsidebar a:hover{ color:#d90b19;} .pd-centent .leftsidebar a:last-child{ border-bottom:none;}
+.pd-centent .pd-wrapper{ float:right;}
+.pd-wrapper .pd-table{ width:1078px; height:118px; border:1px solid #ddd; background:#fff;}
+.pd-wrapper .pd-table .pd-table-tra{ border-bottom:1px solid #ddd; height:34px; line-height:34px; font-size:13px; background:#f7f7f7;}
+.pd-wrapper .pd-table .pd-table-tra a{ display:inline-block; width:99px; text-align:center;}
+.pd-wrapper .pd-table .pd-table-tra .active{ color:#d90b19; font-size:13px; font-weight:bold; background:#FFF; border-bottom:1px solid #FFF; border-right:1px solid #ddd; border-left:1px solid #ddd; }
+.pd-wrapper .pd-table .pd-table-tra .m0{ margin-left:-1px;}
+.pd-wrapper .pd-table .pd-table-trb{ height:40px; line-height:40px; width:1030px; margin:auto;}
+.pd-table .pd-table-trb .dashed{ border-bottom:1px dashed #eee;}
+.pd-table .pd-table-trb ul{ height:40px;}
+.pd-table .pd-table-trb ul li{ float:left; width:210px; margin-right:5px; color:#666;}
+.pd-centent .pd-img{ width:1080px; padding:10px 0px; margin-top:10px; background:#FFF;}
+
+/* 地图弹出层开始*/
+.pop-box {  
+    z-index: 9999; /*这个数值要足够大，才能够显示在最上层*/  
+    margin-bottom: 3px;  
+    display: none;  
+    position: absolute;  
+    background: #FFF;  
+    border:solid 1px #6e8bde;  
+}  
+#allmap { display:block; width:100%; height:100%;}
+/* 地图弹出层结束*/

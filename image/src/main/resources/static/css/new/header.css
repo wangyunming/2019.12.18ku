@@ -1,0 +1,71 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+.topnav{ height:30px; background-color:#f7f7f7; color:#b2b2b2; line-height:30px;}
+.topnav .topnavcontent{ width:1388px; margin:0 auto;}
+.topnav .topnavcontent h4{ font-weight:normal; float:left;font-size: 13px;margin-top: 0px;line-height: 2.2;}
+.topnav .topnavcontent ul{ float:right;}
+.topnav .topnavcontent ul li{ float:left; display:inline-block; margin:0 10px;}
+.topnav .topnavcontent ul li a{ color:#b2b2b2;} .topnav .topnavcontent ul li a:hover{ color:#d90b19;}
+.topnav .topnavcontent .menu-hd{ position:relative;}
+.topnav .topnavcontent .menu-list a{ display:block;}
+.topnav .topnavcontent ul li a{ color:#b2b2b2;} .topnav .topnavcontent ul li a:hover{ color:#d90b19;}
+.topnav .topnavcontent .big{ margin:0; width:90px; text-align:center;} 
+.topnav .topnavcontent .menu-list{ position:absolute; z-index:120; width:90px; background-color:#fff;  border-top:0px; display:none; top:0px; border-left: 1px solid #eee;border-right: 1px solid #eee;border-bottom: 1px solid #eee;}
+.topnav .topnavcontent .menu-list span{ display:block; width:90px; cursor:pointer; border-bottom: 1px solid #fff; margin-bottom:1px;}.topnav .topnavcontent .menu-list span:first-child{margin-bottom:5px;}
+.topnav .topnavcontent .menu-list:hover a { color: #d90b19;}
+.topnavcontent .menu-hd:hover > .menu-list{ display:block;}
+.menu-hd .cum { border-left:1px solid #999; border-color: transparent;}
+.menu-hd div a{ display:inline-block; width:90px;} .menu-hd div a:hover{ background:#fff;}
+.menu-hd i { position: absolute; background: url('/default/images/arrow-icon.png') no-repeat;  right:5px; top: 14px; width:5px;height:3px; }
+.menu-hd .cum i { right: 4px;}
+.mainbav{ height:85px; border-bottom:#dcdbdb 3px solid;}
+.mainbav .container{width:1200px; margin:0 auto;}
+.mainbav .container .mainbav-logo{ margin-top:25px; float:left;}
+.mainbav .container .mainbav-nav{ float:left;}
+.mainbav-nav .nav-list{  float:left; font-size:15px; width:600px; padding-left:90px;}
+.mainbav-nav .nav-item{float:left;}
+.mainbav-nav .nav-item .link{display:block;padding:31px 12px 31px; color:#666; text-decoration:none; position:relative; z-index:10;}
+/*.mainbav-nav .nav-item .link{display:block;padding:31px 15px 31px; color:#666; text-decoration:none; position:relative; z-index:10;}*/
+.mainbav-nav .nav-item .link:hover{ color:#d90b19;}
+.mainbav-nav .nav-item .more-template {color: #999;font-size: 12px;text-decoration: underline;line-height: 32px;    position: relative;float: left;padding-top: 169px;}
+.mainbav-nav .nav-item .more-scene {color: #999;font-size: 12px;text-decoration: underline;line-height: 32px;    position: relative;float: left;padding-top: 151px;}
+
+.nav-item:hover .header-nav-menu, .nav-item:active .header-nav-menu{ display:block;}
+/*--.mainbav-nav .nav-item .item-children{ position:absolute; z-index:150; display:block;}
+.mainbav-nav .nav-item .item-children .item-container{ position:relative; margin:0 auto; height:210px;}
+.mainbav-nav .nav-category{position:relative;float:left;width:138px;}
+.mainbav-nav .nav-category .link-category{display:block;padding:26px 0 38px;text-align:center;color:#333;}
+.mainbav-nav .nav-item-active{position:relative;}
+.mainbav-nav .nav-item-active .link{color:#d90b19;}
+.mainbav-nav .nav-item-active:after{position:absolute;top:50px;left:50%;width:600px;height:40px;margin-left:-300px;content:'';background-color:transparent;}-**/
+.mainbav-nav .header-nav-menu{position:absolute;left:0;z-index:24;width:100%;border-top:1px solid #ddd;background:#fff;overflow:hidden;_zoom:1;  display:none;}
+.header-nav-menu .item-container{ width:1200px; margin:0 auto;}
+.mainbav-nav .header-nav-menu .children-list{margin:0;padding:0;font-size:14px; font-weight:bold; color:#333; text-align:center;}
+.mainbav-nav .header-nav-menu .scene-children-list{margin:0;padding:0;font-size:14px; font-weight:bold; color:#333;}
+.mainbav-nav .header-nav-menu .children-list .first{position:relative;float:left;width:150px;padding:20px 0px 15px 0px;text-align:center;}
+.mainbav-nav .header-nav-menu .scene-children-list .second{position:relative;float:left;width:300px;padding:10px 0px 10px 0px;}
+/*---.mainbav-nav .header-nav-menu .children-list li:before{position:absolute;left:0;top:35px;z-index:1;width:1px;height:100px;content:"";background-color:#e0e0e0;}
+.mainbav-nav .header-nav-menu .children-list .first:before{display:none;}---*/
+.mainbav-nav .header-nav-menu .figure-thumb{width:150px;height:140px;margin:0 auto 12px;text-align:center;}
+.mainbav-nav .header-nav-menu .figure-thumb img{ max-height:140px; max-width:140px; text-align:center; vertical-align:middle;}
+.mainbav-nav .header-nav-menu .figure-thumb a{display:block;}
+.mainbav-nav .header-nav-menu .first .title{ width:150px; height:22px; display:inline-block; overflow:hidden;}
+.mainbav-nav .header-nav-menu .second .title{ width:140px; height:22px;float:left;margin-left:27px;margin-top:10px;text-align: start;}
+.mainbav-nav .header-nav-menu .second a{float:left;}
+.mainbav-nav .header-nav-menu .title a:hover{color:#d90b19;}
+.mainbav-nav .header-nav-menu-active{border-bottom:1px solid #e0e0e0 \9;-webkit-box-shadow:0 3px 4px rgba(0,0,0,0.18);box-shadow:0 3px 4px rgba(0,0,0,0.18);-webkit-transition:-webkit-box-shadow 0.2s;transition:box-shadow 0.2s;}
+
+.mainbav .mainbav-nav .scene-list{ position:absolute; z-index:120; width:190px; background-color:rgba(253,253,253,1);padding:18px; top:115px;margin-left:-50px;display:none;}
+.mainbav .mainbav-nav .scene-list a{ display:inline-block; width:75px;line-height:30px;} 
+.mainbav .mainbav-nav .scene-list span{ display:inline-block; width:35px;} 
+.mainbav .mainbav-nav .scene-hd:hover > .scene-list{ display:block;}
+/*.mainbav .mainbav-nav .scene-list:hover a { color: #d90b19;} */
+
+
+
+.mainbav .container .mainbav-search{ float:right; margin-top:22px;}
+.mainbav-search input{ border:1px solid #ddd; width:175px; padding:5px 10px; color:#ccc; line-height:28px; float:left; height:28px; border-radius:0;}
+.mainbav-search a{ width:38px; height:40px; background-image:url(/default/images/new/search.png); float:right;}
+

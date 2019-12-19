@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.haoyin.image.mapper.UserPermissionDAO">
+
+  <resultMap type="userPermission" id="UserPermissionResult">
+    <result column="TARGET" property="target" />
+    <result column="ACTION" property="action" />
+  </resultMap>
+  
+  <select id="queryPositionId" parameterType="roleQuery" resultType="int">
+    <![CDATA[ 
+      SELECT pr.ID FROM BD_POSITION_ROLE pr
+    ]]>
+    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+      <if test="positionS != null">
+        AND pr.NAME IN
+        <foreach item="item" collection="positionS"  open="(" separator=","  close=")">
+      		#{item}
+      	</foreach>
+      </if>
+    </trim>
+  </select>
+  
+  
+  <select id="findUserRoleList" parameterType="string" resultType="string">
+    <![CDATA[ 
+      SELECT pr.NAME_EN FROM BD_POSITION_ROLE pr
+      INNER JOIN USER_ROLE ur ON ur.ROLE_ID = pr.ID
+      INNER JOIN USER u ON u.USER_ID = ur.USER_ID
+      WHERE u.Name = #{username} 
+    ]]>
+  </select>
+
+  <select id="findUserPermissionList" parameterType="string" resultType="string">
+    <![CDATA[ 
+      SELECT CONCAT(rp.TARGET, ':', rp.ACTION) FROM BD_ROLE_PERMISSION rp
+      INNER JOIN USER_ROLE ur ON ur.ROLE_ID = rp.ROLE_ID
+      INNER JOIN USER u ON u.USER_ID = ur.USER_ID
+      WHERE u.Name = #{username} 
+    ]]>
+  </select>
+
+  <select id="selectUserPermissionForList" parameterType="string" resultType="string">
+    <![CDATA[ 
+      SELECT rp.TARGET, rp.ACTION FROM BD_ROLE_PERMISSION rp
+      INNER JOIN USER_ROLE ur ON ur.ROLE_ID = rp.ROLE_ID
+      INNER JOIN USER u ON u.USER_ID = ur.USER_ID
+      WHERE u.USERNAME = #{username} 
+    ]]>
+  </select>
+
+</mapper>

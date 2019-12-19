@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyin.image.mapper.OrderDAO">
+	<resultMap type="order" id="OrderResultMap">
+		<id column="ID" property="id"/>
+		<result column="ORDER_NO" property="orderNo"/>
+		<result column="USER_NAME" property="userName"/>
+		<result column="USER_ID" property="userId" />
+		<result column="ITEM_TYPE_NUM" property="itemTypeNum"/>
+		<result column="ORG_NAME" property="orgName"/>
+		<result column="SUBMIT_TIME" property="submitTime"/>
+		<result column="SCOUT_STATUS" property="scoutStatus"/>
+		<result column="SEND_STATUS" property="sendStatus"/>
+		<result column="SEND_TIME" property="sendTime"/>
+		<result column="TOTAL_PRICE" property="totalPrice"/>
+		<result column="PAY_AMOUNT" property="payAmount"/>
+		<result column="PAY_STATUS" property="payStatus"/>
+		<result column="COMPANY" property="companyName" />	
+		<result column="PAY_MODE" property="payMode"/>
+		<result column="PAY_TIME" property="payTime"/>
+		<result column="PAY_TYPE" property="payType"/>
+		<result column="COMPLETE_TIME" property="completeTime"/>
+		<result column="CARRIAGE" property="carriage"/>
+		<result column="IS_DESIGNED" property="isDesigned"/>
+		<result column="IS_WITHDRAW" property="isWithdraw"/>
+		<result column="REMARK" property="remark"/>
+		<result column="RECEIPT_TIME" property="receiptTime"/>
+		<result column="OFFLINE_PAY_STATUS" property="offlinePayStatus"/>
+		<collection property="itemList" column="ID" select="com.haoyin.image.mapper.OrderItemDAO.selectItemForListByOrderId" />
+	</resultMap>
+	
+	<resultMap type="order" id="OrderResult">
+		<id column="ID" property="id"/>
+		<result column="ORDER_NO" property="orderNo"/>
+		<result column="ITEM_TYPE_NUM" property="itemTypeNum"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="USER_NAME" property="userName"/>
+		<result column="ORG_ID" property="orgId"/>
+		<result column="ORG_NAME" property="orgName"/>
+		<result column="SUBMIT_TIME" property="submitTime"/>
+		<result column="LINKMAN" property="linkman"/>
+		<result column="PROVINCE" property="province"/>
+		<result column="CITY" property="city"/>
+		<result column="ADDRESS" property="address"/>
+		<result column="TELEPHONE" property="telephone"/>
+		<result column="MOB_TEL" property="mobileTel"/>
+		<result column="EMAIL" property="email"/>
+		<result column="POSTALCODE" property="postalcode"/>
+		<result column="DELIVER_TIME" property="deliverTime"/>
+		<result column="SCOUT_STATUS" property="scoutStatus"/>
+		<result column="SEND_STATUS" property="sendStatus"/>
+		<result column="SEND_TIME" property="sendTime"/>
+		<result column="LOGISTICS" property="logistics"/>
+		<result column="FREIGHT_NO" property="freightNo"/>
+		<result column="CARRIAGE" property="carriage"/>
+		<result column="TOTAL_PRICE" property="totalPrice"/>
+		<result column="PAY_AMOUNT" property="payAmount"/>
+		<result column="PAY_MODE" property="payMode"/>
+		<result column="PAY_TIME" property="payTime"/>
+		<result column="PAY_TYPE" property="payType"/>
+		<result column="PAY_STATUS" property="payStatus"/>
+		<result column="AREA" property="area"/>
+		<result column="PICKUP_ID" property="pickUpId"/>
+		<result column="REMARK" property="remark"/>
+		<result column="OFFLINE_PAY_STATUS" property="offlinePayStatus"/>
+		<collection property="itemList" ofType="orderItem" resultMap="com.haoyin.image.mapper.OrderItemDAO.OrderItemResult" />
+	</resultMap>
+	
+	<sql id="selectOrder">
+		<![CDATA[
+			SELECT O.ID, O.ORDER_NO, O.ITEM_TYPE_NUM, O.USER_ID, O.USER_NAME, O.ORG_NAME, O.SUBMIT_TIME, O.LINKMAN, 
+			O.PROVINCE, O.CITY, O.ADDRESS, O.TELEPHONE, O.MOB_TEL, O.EMAIL, O.POSTALCODE, O.DELIVER_TIME, 
+			O.SCOUT_STATUS, O.SEND_STATUS, O.SEND_TIME, O.LOGISTICS, O.FREIGHT_NO, O.CARRIAGE, O.TOTAL_PRICE, 
+			O.PAY_AMOUNT, O.PAY_MODE, O.PAY_TIME, O.PAY_TYPE, O.PAY_STATUS,  O.COMPLETE_TIME, O.STATUS, O.AREA,O.REMARK,OFFLINE_PAY_STATUS
+			FROM `ORDER` O
+			LEFT OUTER JOIN ORDER_ITEM I ON I.ORDER_ID = O.ID 
+		]]>
+	</sql>
+	<select id="queryOrderForList1" parameterType="orderQuery" resultMap="OrderResultMap" flushCache="true">
+		<![CDATA[
+			SELECT o.ID, ORDER_NO, o.USER_NAME,o.USER_ID, ITEM_TYPE_NUM, SUBMIT_TIME, SCOUT_STATUS, SEND_STATUS, SEND_TIME,ur.COMPANY ,
+			TOTAL_PRICE, PAY_AMOUNT, PAY_STATUS, PAY_MODE, PAY_TIME, PAY_TYPE, COMPLETE_TIME,  RECEIPT_TIME,DATE_ADD(RECEIPT_TIME,INTERVAL '7' DAY) as ExpectedCompletionTime,
+			 CARRIAGE, REMARK,OFFLINE_PAY_STATUS FROM `ORDER` o
+			 INNER JOIN USER_PROFILE ur ON o.USER_ID =ur.ID 
+		]]>
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="startTime != null and startTime != '' "><![CDATA[AND date_format(SUBMIT_TIME,'%Y-%m-%d %H:%i:%s') >= #{startTime}]]></if>
+			<if test="endTime != null and endTime != '' "><![CDATA[AND date_format(SUBMIT_TIME,'%Y-%m-%d %H:%i:%s') <= #{endTime}]]></if>
+			<if test="orderId != null"><![CDATA[AND o.ID = #{orderId}]]></if>
+			<if test="orderNo != null and orderNo != '' "><![CDATA[AND o.ORDER_NO = #{orderNo}]]></if>
+			<if test="oemName != null and oemName != '' "><![CDATA[AND  o.USER_NAME= #{oemName}]]></if>
+			<if test="scoutStatusS != null">AND SCOUT_STATUS IN 
+				<foreach collection="scoutStatusS" item="item" separator="," open="(" close=")">
+				#{item}
+				</foreach>
+			</if>
+			<if test="payStatus!=null"><![CDATA[AND PAY_STATUS=#{payStatus}]]></if>
+			<if test="companyName!=null and companyName !='' "><![CDATA[AND ur.COMPANY=#{companyName}]]></if>
+			<if test="userId!=null"><![CDATA[AND o.USER_ID=#{userId} ]]></if>
+			<![CDATA[AND STATUS != 0 ORDER BY SUBMIT_TIME DESC ]]>
+		</trim>
+	</select>
+	<select id="selectOrderById" parameterType="long" resultMap="OrderResult" flushCache="true">
+		<include refid="selectOrder"/><![CDATA[WHERE O.ID = #{id}]]>
+	</select>
+	
+	<select id="selectOrderByOrderNo" parameterType="string" resultMap="OrderResult" flushCache="true" >
+		<include refid="selectOrder"/><![CDATA[WHERE O.ORDER_NO = #{orderNo}]]>
+	</select>
+	
+	<update id="updateOrderPayStatus" parameterType="order" flushCache="true" >
+		<![CDATA[UPDATE `ORDER`]]>
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="submitTime != null"><![CDATA[SUBMIT_TIME = #{submitTime},]]></if>
+			<if test="scoutStatus != null"><![CDATA[SCOUT_STATUS = #{scoutStatus},]]></if>
+			<if test="payStatus != null"><![CDATA[PAY_STATUS = #{payStatus},]]></if>
+			<if test="payTime != null"><![CDATA[PAY_TIME = now(),]]></if>
+			<if test="payMode != null"><![CDATA[PAY_MODE = #{payMode},]]></if>
+			<if test="payType != null"><![CDATA[PAY_TYPE = #{payType},]]></if>
+			<if test="payAmount != null"><![CDATA[PAY_AMOUNT = #{payAmount},]]></if>
+			<if test="totalPrice != null"><![CDATA[TOTAL_PRICE = #{totalPrice},]]></if>
+			<if test="remark != null"><![CDATA[REMARK = #{remark},]]></if>
+		</trim>
+		<![CDATA[WHERE ID = #{id}]]>
+	</update>
+	<insert id="saveOrderProcess" parameterType="orderProcess" flushCache="true" useGeneratedKeys="true">
+	  	<![CDATA[
+			INSERT INTO `ORDER_PROCESS` (
+				ORDER_ID, ORDER_PROCESS_STATUS, `PROCESS`, PROCESS_TIME, PROCESS_UID, PROCESS_USER, STATUS
+			)
+			VALUES (
+				#{orderId}, #{orderProcessStatus}, #{process}, #{processTime}, #{processUid}, #{processUser}, #{status}
+			)
+		]]>
+	</insert>
+	<update id="updateOrderStatusById" parameterType="orderQuery" flushCache="true" >
+		<![CDATA[
+			UPDATE `ORDER`
+		]]>
+		<trim prefix="SET"  suffixOverrides="," >
+			<if test="scoutStatus!=null">SCOUT_STATUS=#{scoutStatus},</if>
+			<if test="invoiceStatus!=null">INVOICE_STATUS=#{invoiceStatus},</if>
+			
+			<if test="refundTime!=null">REFUND_TIME=#{refundTime},</if>
+			
+			<if test="imageUrl!=null">IMAGE_URL=#{imageUrl},</if>
+			<if test="offlinePayStatus!=null">OFFLINE_PAY_STATUS=#{offlinePayStatus},</if>
+			<if test="remark!=null">REMARK=#{remark},</if>
+			<if test="imageName!=null">IMAGE_NAME=#{imageName},</if>
+			
+		</trim>
+		<where>
+			<if test="orderId!=null">ID=#{orderId}</if>		
+		</where>
+	</update>
+	
+	
+	<!-- 根据订单ID查询条目文件详情 -->
+	<select id="selectItemInfoByOrderId" parameterType="long" resultType="orderItemInfo" flushCache="true">
+		<![CDATA[SELECT ii.ITEM_ID as itemId,ii.COMMODITY_ID as commodityId,ii.COMMODITY_NAME as commodityName,ii.SIZE as size,ii.CURRENCY as currency,
+		ii.BATCH_NO as batch,ii.COMMODITY_CODE as commodityCode,ii.SPEC as spec,ii.QUANTITY as number,ct.TYPE as type,oi.FILE_URL as fileUrl,ii.COLOR as color,TRACKING_NUMBER as trackingNum, 
+		ii.RE_PRICE as rePrice,ii.TOTAL_PRICE as totalPrice,oi.FILE_NAME as fileName FROM 
+		`ORDER` o
+		INNER JOIN ORDER_ITEM oi ON oi.ORDER_ID = o.ID
+		INNER JOIN ORDER_ITEM_INFO ii ON oi.ITEM_ID = ii.ITEM_ID
+		INNER JOIN COMMODITY_TYPE ct ON ii.COMMODITY_ID = ct.ID ]]>
+		WHERE o.ID = #{orderId}
+	</select>
+	
+	
+		<!-- 根据订单条目表ITEM_ID查询订单条目表 -->
+	<select id="selectOrderItemByItemId" parameterType="String" resultType="orderItem" flushCache="true">
+		<![CDATA[SELECT oi.ITEM_ID as itemId,oi.FILE_NAME as fileName FROM 
+		`ORDER` o
+		INNER JOIN ORDER_ITEM oi ON oi.ORDER_ID = o.ID]]>
+		WHERE oi.ITEM_ID = #{itemId}
+	</select>
+	
+	
+	
+	
+	
+</mapper>

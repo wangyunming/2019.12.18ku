@@ -1,0 +1,59 @@
+.metisTree {
+  padding-left: 0;
+}
+.metisTree, .metisTree ul {
+  list-style: none;
+}
+.metisTree li {
+  position: relative;
+}
+.metisTree li a {
+  color: #333;
+  display: block;
+  padding-top: 5px;
+  padding-right: 3px;
+  padding-bottom: 5px;
+  padding-left: 3px;
+  text-decoration: none;
+  outline: 0 none;
+}
+
+.metisTree ul:before {
+  position: absolute;
+  border-left: 1px dotted #333;
+  content: "";
+  width: 30px;
+  top: 25px;
+  left: 5px;
+  bottom: 17px;
+}
+.metisTree ul > li:before {
+  position: absolute;
+  border-top: 1px dotted #333;
+  content: "";
+  width: 30px;
+  top: 13px;
+  left: -33px;
+}
+li.active > a > span.fa-plus-square-o:before {
+  content: "\f147" !important;
+}
+.selectTree::after, .selectTree::abefore {
+	clear: both;
+	box-sizing: border-box;
+}
+.wrapper .metisTree li a:hover {
+	background-color: #f5f5f5;
+}
+.wrapper .metisTree li a:active, .metisTree li a.s {
+	background-color: #eeeeee;
+	border-radius: 3px;
+}
+.wrapper .metisTree li a .operate {
+	display: none;
+}
+.wrapper .metisTree li a:hover .operate, 
+.wrapper .metisTree li a:active .operate,
+.wrapper .metisTree li a.s .operate {
+	display: block;
+}

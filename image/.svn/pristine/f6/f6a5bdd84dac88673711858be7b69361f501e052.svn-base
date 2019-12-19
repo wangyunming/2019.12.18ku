@@ -1,0 +1,226 @@
+package com.haoyin.image.serviceImpl;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+
+import com.haoyin.image.entity.Order;
+import com.haoyin.image.entity.OrderProcess;
+import com.haoyin.image.entity.TradeLog;
+import com.haoyin.image.entity.TradeLogQuery;
+import com.haoyin.image.entity.User;
+import com.haoyin.image.exception.TransactionRuntimeException;
+import com.haoyin.image.mapper.OrderDAO;
+import com.haoyin.image.mapper.TradeLogDAO;
+import com.haoyin.image.mapper.UserDAO;
+import com.haoyin.image.service.DirectPayService;
+import com.haoyin.image.util.TradeConstant;
+import com.haoyin.image.util.alipay.PayResult;
+import com.haoyin.image.util.alipay.PayResultSupport;
+import com.haoyin.image.util.constant.OrderStatus;
+
+
+
+@Service
+public class DirectPayServiceImpl extends BaseService implements DirectPayService{
+	
+	@Resource
+	OrderDAO orderDao;
+	
+	@Resource
+	TradeLogDAO  tradeLogDao;
+	
+	@Resource
+	UserDAO     userDao ;
+	
+	/**
+	 *沙箱版本 
+	 */
+	
+/*	@Override
+	public PayResult alipayDirectPay(HttpServletRequest req, String type) {
+		return executeTransactionToPayResult(new TransactionCallback<PayResult>() {
+			
+			@Override
+			public PayResult doInTransaction(TransactionStatus status) {
+				Integer orderstatus=OrderStatus.WAITING_DELIVERY;
+				if(type.equals("mela")){//大客户先审批在付款,没有上传文件
+					orderstatus=OrderStatus.WAITING_CONFIRM;
+				}
+				PayResult result = new PayResultSupport();
+				try {
+					String orderNo = req.getParameter("out_trade_no");
+						Order order = null;
+						
+							order = orderDao.selectOrderByOrderNo(orderNo);
+						if (null == order) {
+							throw new TransactionRuntimeException("The transaction rollback: order is null.");
+						}
+						if (order.getScoutStatus() > OrderStatus.ORDER_UPLOAD) {
+							result.setSuccess(true);
+							return result;
+						}
+						
+						result.setModel(Order.class, order);
+						TradeLogQuery query = new TradeLogQuery();
+						query.setOrderNo(orderNo);
+						TradeLog tradeLog = tradeLogDao.queryTradeLog(query);
+						if (null != tradeLog) {
+							result.setSuccess(true);
+							return result;
+						}
+
+						User user = userDao.findUserByUserId(order.getUserId());
+						if (null == user) {
+							throw new TransactionRuntimeException("The transaction rollback: user is null.");
+						}
+
+						order.setPayStatus(1);
+						order.setScoutStatus(0);
+						String gmtPayment = req.getParameter("gmt_payment");
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						order.setSubmitTime(null);
+						order.setPayTime(new Date());
+						if (orderDao.updateOrderPayStatus(order)>0?true:false) {
+							tradeLog = new TradeLog();
+							tradeLog.setOrderId(order.getId().toString());
+							tradeLog.setOrderNo(order.getOrderNo());
+							tradeLog.setTradeNo(req.getParameter("trade_no"));
+							tradeLog.setSubject(req.getParameter("subject"));
+							tradeLog.setTotalFee(req.getParameter("total_amount"));
+							tradeLog.setSeller(req.getParameter("seller_email"));
+							tradeLog.setBuyer(req.getParameter("buyer_email"));
+							tradeLog.setTradeStatus(req.getParameter("trade_status"));
+							tradeLog.setTradeCreateTime(req.getParameter("gmt_create"));
+							tradeLog.setPaymentTime(req.getParameter("gmt_payment"));
+							tradeLog.setTradeType(req.getParameter("payment_type"));
+							tradeLog.setPayMode(TradeConstant.PAY_MODE_OF_ALIPAY);
+							tradeLog.setRemark(req.getParameter("body"));
+							tradeLog.setCreateGmt(Calendar.getInstance().getTime());
+							tradeLog.setUserId(user.getUserId());
+							tradeLog.setBuyerName(user.getUsername());
+
+							result.setSuccess(tradeLogDao.saveTradeLog(tradeLog)>0?true:false);
+							
+							
+							if (result.isSuccess()) {
+								OrderProcess process = new OrderProcess();
+								process.setOrderId(order.getId());
+								process.setOrderProcessStatus(order.getScoutStatus());
+								process.setProcess("订单在线支付成功");
+								process.setProcessTime(Calendar.getInstance().getTime());
+								process.setProcessUid(user.getUserId());
+								process.setProcessUser(user.getUsername());
+								process.setStatus(0);
+								result.setSuccess(orderDao.saveOrderProcess(process)>0?true:false);
+							}
+						}
+						log.debug("the transaction execute success.");
+					
+					return result;
+				} catch (Exception e) {
+					log.error("excute alipay pay order error, and transaction rolllback.",e);
+					throw new RuntimeException("the alipay payment order transaction failed.", e);
+				}
+			}
+		});
+	}*/
+	/**
+	 *好印版本 
+	 */
+	@Override
+	public PayResult alipayDirectPay(HttpServletRequest req, String type) {
+		return executeTransactionToPayResult(new TransactionCallback<PayResult>() {
+			
+			@Override
+			public PayResult doInTransaction(TransactionStatus status) {
+				Integer orderstatus=OrderStatus.WAITING_DELIVERY;
+				if(type.equals("mela")){//大客户先审批在付款,没有上传文件
+					orderstatus=OrderStatus.WAITING_CONFIRM;
+				}
+				PayResult result = new PayResultSupport();
+				try {
+					String orderNo = req.getParameter("out_trade_no");
+						Order order = null;
+						
+							order = orderDao.selectOrderByOrderNo(orderNo);
+						if (null == order) {
+							throw new TransactionRuntimeException("The transaction rollback: order is null.");
+						}
+						if (order.getScoutStatus() > OrderStatus.ORDER_UPLOAD) {
+							result.setSuccess(true);
+							return result;
+						}
+						
+						result.setModel(Order.class, order);
+						TradeLogQuery query = new TradeLogQuery();
+						query.setOrderNo(orderNo);
+						TradeLog tradeLog = tradeLogDao.queryTradeLog(query);
+						if (null != tradeLog) {
+							result.setSuccess(true);
+							return result;
+						}
+
+						User user = userDao.findUserByUserId(order.getUserId());
+						if (null == user) {
+							throw new TransactionRuntimeException("The transaction rollback: user is null.");
+						}
+
+						order.setPayStatus(1);
+						order.setScoutStatus(0);
+						String gmtPayment = req.getParameter("gmt_payment");
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						order.setSubmitTime(null);
+						order.setPayTime(new Date());
+						if (orderDao.updateOrderPayStatus(order)>0?true:false) {
+							tradeLog = new TradeLog();
+							tradeLog.setOrderId(order.getId().toString());
+							tradeLog.setOrderNo(order.getOrderNo());
+							tradeLog.setTradeNo(req.getParameter("trade_no"));
+							tradeLog.setSubject(req.getParameter("subject"));
+							tradeLog.setTotalFee(req.getParameter("total_fee"));
+							tradeLog.setSeller(req.getParameter("seller_email"));
+							tradeLog.setBuyer(req.getParameter("buyer_email"));
+							tradeLog.setTradeStatus(req.getParameter("trade_status"));
+							tradeLog.setTradeCreateTime(req.getParameter("notify_time"));
+							tradeLog.setPaymentTime(req.getParameter("gmt_payment"));
+							tradeLog.setTradeType(req.getParameter("payment_type"));
+							tradeLog.setPayMode(TradeConstant.PAY_MODE_OF_ALIPAY);
+							tradeLog.setRemark(req.getParameter("body"));
+							tradeLog.setCreateGmt(Calendar.getInstance().getTime());
+							tradeLog.setUserId(user.getUserId());
+							tradeLog.setBuyerName(user.getUsername());
+
+							result.setSuccess(tradeLogDao.saveTradeLog(tradeLog)>0?true:false);
+							
+							
+							if (result.isSuccess()) {
+								OrderProcess process = new OrderProcess();
+								process.setOrderId(order.getId());
+								process.setOrderProcessStatus(order.getScoutStatus());
+								process.setProcess("订单在线支付成功");
+								process.setProcessTime(Calendar.getInstance().getTime());
+								process.setProcessUid(user.getUserId());
+								process.setProcessUser(user.getUsername());
+								process.setStatus(0);
+								result.setSuccess(orderDao.saveOrderProcess(process)>0?true:false);
+							}
+						}
+						log.debug("the transaction execute success.");
+					
+					return result;
+				} catch (Exception e) {
+					log.error("excute alipay pay order error, and transaction rolllback.",e);
+					throw new RuntimeException("the alipay payment order transaction failed.", e);
+				}
+			}
+		});
+	}
+}

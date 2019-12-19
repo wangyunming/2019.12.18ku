@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyin.image.mapper.InvoiceDAO">
+		<resultMap type="invoiceInformation" id="invoiceInformationResult">
+		    <id column="ID" property="id" />
+		    <result column="USER_ID" property="userId" />
+		    <result column="COMPANY_TITLE" property="companyTitle"/>
+		    <result column="TAX_ID" property="taxId"/>
+		    <result column="REG_ADDRESS" property="regAddress"/>
+		    <result column="REG_PHONE" property="regPhone"/>
+		    <result column="BANK" property="bank" />
+		    <result column="ACCOUNT" property="account" />
+		    <result column="CREATE_TIME" property="createTime" />
+		    <result column="CREATE_GMT" property="createGmt" />
+		    <result column="CREATE_PERSON" property="createPerson" />
+		    <result column="REAL_NAME" property="taker" />
+		    <result column="MOBILE_PHONE" property="billPhone" />
+		    <result column="ADDRESS" property="billAddress" />
+		    <result column="IDS" property="ids" />
+		    <result column="TYPE" property="type" />
+		    <result column="MONEY" property="invMoney" />
+		    <result column="INVOICE_STATUS" property="invoiceStatus" />
+		    <result column="LOGISTICS" property="logistics" />
+	    </resultMap>
+	   <resultMap type="order" id="OrderResultMap">
+		<id column="ID" property="id"/>
+		<result column="ORDER_NO" property="orderNo"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="USER_NAME" property="userName"/>
+		<result column="ITEM_TYPE_NUM" property="itemTypeNum"/>
+		<result column="ORG_NAME" property="orgName"/>
+		<result column="SUBMIT_TIME" property="submitTime"/>
+		<result column="SCOUT_STATUS" property="scoutStatus"/>
+		<result column="SEND_STATUS" property="sendStatus"/>
+		<result column="SEND_TIME" property="sendTime"/>
+		<result column="TOTAL_PRICE" property="totalPrice"/>
+		<result column="PAY_AMOUNT" property="payAmount"/>
+		<result column="PAY_STATUS" property="payStatus"/>
+		<result column="PAY_MODE" property="payMode"/>
+		<result column="PAY_TIME" property="payTime"/>
+		<result column="PAY_TYPE" property="payType"/>
+		<result column="COMPLETE_TIME" property="completeTime"/>
+		<result column="CARRIAGE" property="carriage"/>
+		<result column="IS_DESIGNED" property="isDesigned"/>
+		<result column="IS_WITHDRAW" property="isWithdraw"/>
+		<result column="REMARK" property="remark"/>
+		<result column="STATUS" property="status"/>
+		<result column="INVOICE_STATUS" property="invoiceStatus"/>
+		<collection property="itemList" column="ID" select="com.haoyin.image.mapper.OrderItemDAO.selectItemForListByOrderId" />
+	</resultMap>
+		<!-- 添加发票信息 -->
+			<insert id="insertInvoiceInformation" parameterType="invoiceInformation" useGeneratedKeys="true" flushCache="true" >
+					INSERT INTO invoice_information(USER_ID,COMPANY_TITLE,TAX_ID,REG_ADDRESS,REG_PHONE,BANK,ACCOUNT,REAL_NAME,MOBILE_PHONE,ADDRESS)
+					VALUES(#{createUserId},#{companyTitle},#{taxId},#{regAddress},#{regPhone},#{bank},#{account},#{taker},#{billPhone},#{billAddress})
+			</insert>
+		<!-- 添加申请开票信息 -->
+			<insert id="addMakeInvoice" parameterType="invoiceInformation" useGeneratedKeys="true" flushCache="true" >
+					INSERT INTO invoice_records(TYPE,MONEY,CREATE_PERSON,REAL_NAME,MOBILE_PHONE,ADDRESS,IDS,COMPANY_TITLE,TAX_ID,REG_ADDRESS,REG_PHONE,BANK,ACCOUNT,CREATE_USER_ID)
+					VALUES(#{type},#{invMoney},#{createPerson},#{taker},#{billPhone},#{billAddress},#{ids},#{companyTitle},#{taxId},#{regAddress},#{regPhone},#{bank},#{account},#{createUserId})
+			</insert>
+		<!-- 查询发票信息 -->	
+			<select id="selectInvoiceInfo" parameterType="orderQuery" resultMap="invoiceInformationResult" >
+					<![CDATA[SELECT 
+						ID,USER_ID,COMPANY_TITLE,TAX_ID,REG_ADDRESS,REG_PHONE,BANK,ACCOUNT,REAL_NAME,MOBILE_PHONE,ADDRESS,CREATE_TIME	
+					FROM invoice_information
+					]]>
+					<trim prefix="WHERE" prefixOverrides="AND |OR ">
+					  <if test='id != null and id != ""'>
+					     <![CDATA[ AND  ID = #{id} ]]>
+					  </if>
+					  <if test='userId != null and userId !=  ""' >
+						<![CDATA[AND USER_ID=#{userId}]]>
+					  </if>
+					  <if test='companyTitle != null'>
+					      <![CDATA[ AND (COMPANY_TITLE REGEXP CONCAT('(', #{companyTitle}, ')')) ]]>
+					  </if>
+					</trim>
+			</select>
+		<!-- 修改发票信息 -->
+			<update id="updateInvoiceInformation" parameterType="invoiceInformation" flushCache="true">
+				<![CDATA[ UPDATE invoice_information]]>
+				<trim prefix="SET" suffixOverrides=",">
+			      <if test="companyTitle != null"><![CDATA[ COMPANY_TITLE =#{companyTitle},]]></if>
+			      <if test="taxId != null"><![CDATA[ TAX_ID =#{taxId},]]></if>
+			      <if test="regAddress != null"><![CDATA[ REG_ADDRESS =#{regAddress},]]></if>
+			      <if test="regPhone != null"><![CDATA[ REG_PHONE =#{regPhone},]]></if>
+			      <if test="bank != null"><![CDATA[ BANK =#{bank},]]></if>
+			      <if test="account != null"><![CDATA[ ACCOUNT =#{account},]]></if>
+			      <if test="taker != null"><![CDATA[ REAL_NAME =#{taker},]]></if>
+			      <if test="billPhone != null"><![CDATA[ MOBILE_PHONE =#{billPhone},]]></if>
+			      <if test="billAddress != null"><![CDATA[ ADDRESS =#{billAddress},]]></if>
+			      <![CDATA[ UPDATE_TIME =#{updateTime}]]>
+			    </trim>
+				<![CDATA[ WHERE ID = #{id} ]]>
+			</update>
+		<!-- 删除发票信息 -->
+			<delete id="deleteInvoiceInformation" parameterType="long" flushCache="true">
+				<![CDATA[ DELETE FROM invoice_information WHERE ID = #{id} ]]>
+			</delete>
+		<!-- 查询待开票订单 -->
+			<select id="queryOrderForMakeInformation"  parameterType="orderQuery" resultMap="OrderResultMap">
+				<![CDATA[
+					SELECT ID,ORDER_NO,USER_ID,USER_NAME,SUBMIT_TIME,SCOUT_STATUS,PAY_AMOUNT,STATUS,INVOICE_STATUS
+					FROM `order`
+				]]>
+				<trim prefix="WHERE" prefixOverrides="AND |OR">
+					SCOUT_STATUS=2
+					  <if test='invoiceStatus != null ' >
+					     <![CDATA[ AND  INVOICE_STATUS = #{invoiceStatus} ]]>
+					  </if>
+					<if test='userId != null and userId !=  ""' >
+						<![CDATA[AND USER_ID=#{userId}]]>
+					</if>
+				</trim>
+			</select>
+		<!-- 查询已申请开票信息 -->	
+			<select id="selectMakeInvoice" parameterType="orderQuery" resultMap="invoiceInformationResult" >
+					<![CDATA[SELECT 
+						ID,TYPE,MONEY,CREATE_GMT,CREATE_PERSON,COMPANY_TITLE,TAX_ID,REG_ADDRESS,REG_PHONE,BANK,ACCOUNT,
+						REAL_NAME,MOBILE_PHONE,ADDRESS,IDS,INVOICE_STATUS,LOGISTICS
+					FROM invoice_records
+					]]>
+					<trim prefix="WHERE" prefixOverrides="AND |OR ">
+					  <if test='id != null and id != ""'>
+					     <![CDATA[ AND  ID = #{id} ]]>
+					  </if>
+					  <if test='type != null and type != ""'>
+					     <![CDATA[ AND  TYPE = #{type} ]]>
+					  </if>
+					  <if test='companyTitle != null'>
+					      <![CDATA[ AND (COMPANY_TITLE REGEXP CONCAT('(', #{companyTitle}, ')')) ]]>
+					  </if>
+					  <if test='userId != null and userId !=  ""' >
+					      <![CDATA[AND CREATE_USER_ID=#{userId}]]>
+					  </if>
+					</trim>
+			</select>	
+</mapper>

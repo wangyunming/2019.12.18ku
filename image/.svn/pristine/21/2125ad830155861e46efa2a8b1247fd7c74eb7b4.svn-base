@@ -1,0 +1,451 @@
+package com.haoyin.image.serviceImpl;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.haoyin.image.cookie.ShoppingCartCookieManager;
+import com.haoyin.image.entity.CommodityInfo;
+import com.haoyin.image.entity.CommodityType;
+import com.haoyin.image.entity.Delivery;
+import com.haoyin.image.entity.DeliveryQuery;
+import com.haoyin.image.entity.JSONResult;
+import com.haoyin.image.entity.Order;
+import com.haoyin.image.entity.OrderItem;
+import com.haoyin.image.entity.OrderItemInfo;
+import com.haoyin.image.entity.ShoppingCartForm;
+import com.haoyin.image.entity.ShoppingCartItem;
+import com.haoyin.image.entity.UserProfile;
+import com.haoyin.image.exception.DaoException;
+import com.haoyin.image.exception.TransactionRuntimeException;
+import com.haoyin.image.mapper.LogisticDAO;
+import com.haoyin.image.mapper.OrderProcessDAO;
+import com.haoyin.image.service.OrderProcessService;
+import com.haoyin.image.util.GUIDUtil;
+import com.haoyin.image.util.RowNumUtil;
+
+@Service
+public class OrderProcessServiceImpl extends BaseService implements OrderProcessService{
+
+	@Autowired
+	private OrderProcessDAO orderProcessDAO;
+	
+	@Autowired
+	private LogisticDAO logisticDAO;
+	
+	public UserProfile getUser() {
+		return (UserProfile) SecurityUtils.getSubject().getSession().getAttribute("uus");
+	}
+
+	@Override
+	public List<CommodityType> selectCommodityTypeList() {
+		return orderProcessDAO.selectCommodityTypeList();
+	}
+	
+	
+	public CommodityType selectCommodityTypeById(CommodityType query) {
+		return orderProcessDAO.selectCommodityTypeById(query);
+	}
+
+	@Override
+	public boolean insertShoppingCartItem(ShoppingCartItem query) {
+		return  executeTransaction(action->{
+			try {
+				orderProcessDAO.insertShoppingCartItem(query);
+				/*if(query.getType().equals("1") || query.getType().equals("4")) {//如果是价格牌文件,则需要同时添加吊绳
+					ShoppingCartItem diaosheng = new ShoppingCartItem();
+					diaosheng.setItemId("42");//商品ID
+					diaosheng.setCommodityName("尾绳");
+					diaosheng.setSize("60mm*55mm");
+					diaosheng.setRePrice("0.07");
+					diaosheng.setUserId(getUser().getId());
+					diaosheng.setNumber(query.getNumber());
+					diaosheng.setSupplierPrice("0.05");
+					orderProcessDAO.insertShoppingCartItem(diaosheng);
+				}*/
+				return true;
+			}catch(Exception e) {
+				throw new TransactionRuntimeException("插入购物车失败!",e);
+			}
+		});
+	}
+
+	@Override
+	public boolean insertFileCommodityInfoList(List<CommodityInfo> query) {
+		return  executeTransaction(action->{
+			try {
+				orderProcessDAO.insertFileCommodityInfoList(query);
+				return true;
+			}catch(Exception e) {
+				throw new TransactionRuntimeException("文件状态更新失败!",e);
+			}
+		});
+	}
+
+	
+
+	@Override
+	public PageInfo<ShoppingCartItem> queryCartList(ShoppingCartItem shoppingCartItem) {
+		try{
+			PageHelper.startPage(shoppingCartItem.getPageNum(), shoppingCartItem.getPageSize());
+		 	List<ShoppingCartItem> cartList=orderProcessDAO.selectCartItemForList(shoppingCartItem);
+		 	return  new PageInfo<>(cartList);
+		}catch(DaoException e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Transactional
+	@Override
+	public boolean updateShoppingCart(ShoppingCartForm cartForm) {
+		try{
+		int 	rows=orderProcessDAO.updateShoppingCart(cartForm);
+		if(rows>0){
+			return true;
+		}
+		return false;
+		}catch (DaoException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+	}
+
+	@Transactional(readOnly=false)
+	@Override
+	public boolean delShoppingCartItemByItemId(Long shoppingCartId) {
+		try{
+		 int rows=orderProcessDAO.delShoppingCartItemByItemId(shoppingCartId);
+		 if(rows>0){
+			 return true;
+		 }
+		 return false;
+		}catch(DaoException e){
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+
+	@Override
+	public int queryCartListCount(ShoppingCartItem itemQuery) {
+		try{
+		 return orderProcessDAO.selectCartListCount(itemQuery);
+		}catch (DaoException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	@Override
+	public List<ShoppingCartItem> selectShoppingCartList(ShoppingCartItem shoppingCartItem) {
+		return orderProcessDAO.selectShoppingCartList(shoppingCartItem);
+	}
+
+	
+	/**
+	 * 插入订单
+	 */
+	@Override
+	public boolean insertOrder(Long deliveryId, Order order,String[] itemId) {
+		return  executeTransaction(action->{
+			try {
+				if(itemId == null || itemId.length == 0) {
+					JSONResult.error("请选择结算商品!");
+					return false;
+				}
+				BigDecimal totalPrice = new BigDecimal(0.000);//订单总金额
+				BigDecimal supplierTotalPrice = new BigDecimal(0.000);//供应商总金额
+				ShoppingCartItem cartQuery = new ShoppingCartItem();
+				List<String> cartIdList = new ArrayList<>();
+				Collections.addAll(cartIdList,itemId);//把数组转变为List
+				cartQuery.setCartList(cartIdList);
+				List<ShoppingCartItem> cartList = orderProcessDAO.selectShoppingCartList(cartQuery);//购物车列表
+				
+				for(int i=0;i<cartList.size();i++) {
+					if(cartList.get(i).getTotalPrice() != null && !cartList.get(i).getTotalPrice().equals("")) {
+						BigDecimal price = new BigDecimal(cartList.get(i).getTotalPrice());//订单总金额
+						totalPrice = totalPrice.add(price).setScale(3, BigDecimal.ROUND_HALF_UP);
+						
+						BigDecimal supplierpPrice = new BigDecimal(cartList.get(i).getSupplierPriceTotal());//订单总金额
+						supplierTotalPrice = supplierTotalPrice.add(supplierpPrice).setScale(3, BigDecimal.ROUND_HALF_UP);
+						
+					}
+				}
+				
+				DeliveryQuery deliveryQuery = new DeliveryQuery();
+				deliveryQuery.setId(deliveryId);
+				Delivery delivery = logisticDAO.selectDeliveryById(deliveryQuery);
+				order.setLinkman(delivery.getLinkman());//联系人
+				order.setProvince(delivery.getProvince());//省份
+				order.setCity(delivery.getCity());//城市
+				order.setDistrict(delivery.getDistrict());//区域, 地方, 管区
+				order.setAddress(delivery.getAddress());//地址
+				String province = delivery.getProvince()==null?"":delivery.getProvince();
+				String city = delivery.getCity()==null?"":delivery.getCity();
+				String district = delivery.getDistrict()==null?"":delivery.getDistrict();
+				String address = delivery.getAddress()==null?"":delivery.getAddress();
+				String area = province + city + district + address;
+				order.setArea(area);
+				order.setLogistics(order.getLogistics());//配送方式
+				order.setTelephone(delivery.getTelephone());//电话
+				order.setMobileTel(delivery.getMobileTel());//手机
+				order.setEmail(delivery.getEmail());//电子邮件
+				order.setPostalcode(delivery.getPostalcode());//邮编
+				order.setScoutStatus(0);//订单状态
+				order.setOrderNo(GUIDUtil.GUID(""));//订单编号
+				order.setItemTypeNum(itemId.length);//商品种类的数量
+				order.setUserId(getUser().getId());//用户ID
+				order.setUserName(getUser().getUsername());//用户name
+				order.setPayStatus(0);//支付状态0:未支付
+				order.setStatus(1);//订单状态1:有效
+				if(order.getPayMode()!=null && order.getPayMode()==2) {//支付类型(1:在线支付 2线下支付 3货到付款 4签约月结)
+					order.setPayType(2);
+				}else {
+					order.setPayType(1);
+				}
+				order.setTotalPrice(totalPrice.setScale(2, BigDecimal.ROUND_HALF_UP)+"");//订单总价
+				order.setPayAmount(totalPrice.setScale(2, BigDecimal.ROUND_HALF_UP)+"");//应支付价格
+				order.setSupplierPriceTotal(supplierTotalPrice+"");//供应商总价
+				orderProcessDAO.insertOrder(order);//插入订单
+				
+				
+				List<OrderItem> orderItemQuery = new ArrayList<>();
+				for(int i=0;i<cartList.size();i++) {
+					OrderItem orderItem = new OrderItem();
+					orderItem.setOrderId(order.getId());
+					orderItem.setCommodityId(cartList.get(i).getCommodityId());
+					orderItem.setCommodityName(cartList.get(i).getCommodityName());
+					orderItem.setNumber(cartList.get(i).getNumber());
+					orderItem.setRePrice(cartList.get(i).getRePrice());
+					orderItem.setFileName(cartList.get(i).getFileName());
+					orderItem.setFileUrl(cartList.get(i).getFileUrl());
+					orderItem.setTotalPrice(cartList.get(i).getTotalPrice());
+					orderItemQuery.add(orderItem);
+				}
+				orderProcessDAO.insertOrderItemforList(orderItemQuery);//插入订单条目
+				
+				OrderItem itemParam = new OrderItem();
+				itemParam.setOrderId(order.getId());
+				List<OrderItem> orderItemList = orderProcessDAO.selectOrderItemByOrderId(itemParam);//根据订单ID查询订单条目
+				for(int i=0;i<orderItemList.size();i++) {
+					if(orderItemList.get(i).getType() == 1 || orderItemList.get(i).getType() == 2 || orderItemList.get(i).getType() == 4 || orderItemList.get(i).getType() == 5) {
+						
+						String suffix = orderItemList.get(i).getFileUrl().substring(orderItemList.get(i).getFileUrl().lastIndexOf(".") + 1);//获取文件后缀
+						File file = new File(orderItemList.get(i).getFileUrl());
+						InputStream is = new FileInputStream(file);
+						Workbook wb0; 
+						if("xls".equals(suffix)){
+							wb0 = new HSSFWorkbook(is);//2003
+			            }else if("xlsx".equals(suffix)){
+			            	wb0 = new XSSFWorkbook(is);//2007
+			            }else{
+			            	wb0 = null;
+			            	JSONResult.error("不支持的文件类型: " + suffix);
+							throw new RuntimeException("the file is too small, transfer failed.");       
+			            }
+						
+						 // 获取选项卡对象 第0个选项卡  
+						Sheet sht0 = wb0.getSheetAt(0);  
+						int rowNum = sht0.getLastRowNum();//总行数
+						rowNum = RowNumUtil.getRowNum(sht0);
+						List<OrderItemInfo> infoList = new ArrayList<>();
+						
+						for(int j=1;j<=rowNum;j++) {
+							OrderItemInfo info = new OrderItemInfo();
+							info.setItemId(orderItemList.get(i).getItemId());//条目ID
+							info.setCommodityId(orderItemList.get(i).getCommodityId());//商品ID
+							info.setCommodityName(orderItemList.get(i).getCommodityName());//商品名称
+							info.setBatch(orderItemList.get(i).getFileName());//批次号(文件名)
+							if(cartList.get(i).getType().equals("1")) {//如果是吊牌文件
+								if(sht0.getRow(j) != null) {
+									info.setCommodityCode(sht0.getRow(j).getCell(1)==null?null:(sht0.getRow(j).getCell(1)+""));//商品编号
+									info.setSize(sht0.getRow(j).getCell(4)==null?null:(sht0.getRow(j).getCell(4)+""));//size
+									if(sht0.getRow(j).getCell(5) != null) {sht0.getRow(j).getCell(5).setCellType(Cell.CELL_TYPE_STRING);};
+									info.setCurrency(sht0.getRow(j).getCell(5)==null?null:sht0.getRow(j).getCell(5)+"");//币种
+									if(sht0.getRow(j).getCell(8) != null) {sht0.getRow(j).getCell(8).setCellType(Cell.CELL_TYPE_STRING);}
+									info.setNumber(sht0.getRow(j).getCell(8)==null?null:(sht0.getRow(j).getCell(8)+""));//数量
+									info.setColor(sht0.getRow(j).getCell(3)==null?null:(sht0.getRow(j).getCell(3)+""));//颜色
+								}
+							}else if(cartList.get(i).getType().equals("2")) {//如果是summer 2019合格证文件
+								if(sht0.getRow(j) != null) {
+									info.setCommodityCode(sht0.getRow(j).getCell(2)==null?null:(sht0.getRow(j).getCell(2)+""));//商品编号
+									info.setSpec(sht0.getRow(j).getCell(5)==null?null:(sht0.getRow(j).getCell(5)+""));//号型
+									if(sht0.getRow(j).getCell(6) != null) {sht0.getRow(j).getCell(6).setCellType(Cell.CELL_TYPE_STRING);};
+									info.setSize(sht0.getRow(j).getCell(6)==null?null:(sht0.getRow(j).getCell(6)+""));//size(内部码)
+									if(sht0.getRow(j).getCell(3) != null) {sht0.getRow(j).getCell(3).setCellType(Cell.CELL_TYPE_STRING);};
+									info.setNumber(sht0.getRow(j).getCell(3)==null?null:(sht0.getRow(j).getCell(3)+""));//数量	
+									info.setColor(sht0.getRow(j).getCell(11)==null?null:(sht0.getRow(j).getCell(11)+""));//颜色	
+								}
+							}else if(cartList.get(i).getType().equals("4")) {//如果是吊牌2文件（不含set price）
+								info.setCommodityCode(sht0.getRow(j).getCell(1)==null?null:sht0.getRow(j).getCell(1)+"");//商品编号
+								info.setSize(sht0.getRow(j).getCell(4)==null?null:sht0.getRow(j).getCell(4)+"");//size
+								if(sht0.getRow(j).getCell(5) != null) {sht0.getRow(j).getCell(5).setCellType(Cell.CELL_TYPE_STRING);};
+								info.setCurrency(sht0.getRow(j).getCell(5)==null?null:sht0.getRow(j).getCell(5)+"");//币种
+								if(sht0.getRow(j).getCell(7) != null) {sht0.getRow(j).getCell(7).setCellType(Cell.CELL_TYPE_STRING);};
+								info.setNumber(sht0.getRow(j).getCell(7)==null?null:sht0.getRow(j).getCell(7)+"");//数量
+								info.setColor(sht0.getRow(j).getCell(3)==null?null:sht0.getRow(j).getCell(3)+"");//颜色
+							}else if(cartList.get(i).getType().equals("5")) {//如果是fall 2019合格证文件
+								if(sht0.getRow(j) != null) {
+									info.setCommodityCode(sht0.getRow(j).getCell(2)==null?null:(sht0.getRow(j).getCell(2)+""));//商品编号
+									info.setSpec(sht0.getRow(j).getCell(5)==null?null:(sht0.getRow(j).getCell(5)+""));//号型
+									if(sht0.getRow(j).getCell(6) != null) {sht0.getRow(j).getCell(6).setCellType(Cell.CELL_TYPE_STRING);};
+									info.setSize(sht0.getRow(j).getCell(6)==null?null:(sht0.getRow(j).getCell(6)+""));//size(内部码)
+									if(sht0.getRow(j).getCell(3) != null) {sht0.getRow(j).getCell(3).setCellType(Cell.CELL_TYPE_STRING);};
+									info.setNumber(sht0.getRow(j).getCell(3)==null?null:(sht0.getRow(j).getCell(3)+""));//数量	
+									info.setColor(sht0.getRow(j).getCell(11)==null?null:(sht0.getRow(j).getCell(11)+""));//颜色	
+								}
+							}
+							if(info.getNumber()==null || info.getNumber().equals("")) {
+								continue;
+							}
+							info.setRePrice(orderItemList.get(i).getRePrice());//单价
+							//info.setTotalPrice(orderItemList.get(i).getTotalPrice());
+							
+							infoList.add(info);
+						}
+						orderProcessDAO.insertOrderItemInfoforList(infoList);//插入条目文件详情
+						
+					}else {
+						List<OrderItemInfo> infoList = new ArrayList<>();
+						OrderItemInfo info = new OrderItemInfo();
+						info.setItemId(orderItemList.get(i).getItemId());//条目ID
+						info.setCommodityId(orderItemList.get(i).getCommodityId());//商品ID
+						info.setCommodityName(orderItemList.get(i).getCommodityName());//商品名称
+						info.setNumber(orderItemList.get(i).getNumber());//数量
+						info.setSpec(orderItemList.get(i).getSize());//规格
+						info.setRePrice(orderItemList.get(i).getRePrice());//单价
+						info.setTotalPrice(orderItemList.get(i).getTotalPrice());
+						
+						infoList.add(info);
+						orderProcessDAO.insertOrderItemInfoforList(infoList);//插入条目文件详情
+						
+					}
+				}
+				
+				for(int i=0;i<cartList.size();i++) {
+					orderProcessDAO.delShoppingCartItemByItemId(cartList.get(i).getId());//删除购物车
+				}
+				//更行cookie中购物车数量
+				ShoppingCartItem shoppingCartItem=new ShoppingCartItem();
+				shoppingCartItem.setUserId(getUser().getId());
+				int  number=orderProcessDAO.selectCartListCount(shoppingCartItem);
+				ShoppingCartCookieManager.writeShoppingNumber(number);
+				return true;
+			}catch(Exception e) {
+				System.out.println(e.getStackTrace());
+				throw new TransactionRuntimeException("插入订单失败!",e);
+			}
+		});
+	}
+	
+	
+	
+	@Override
+	public OrderItem selectOrderByItemId(OrderItem itemQuery) {
+		try{
+		 return orderProcessDAO.selectOrderByItemId(itemQuery);
+		}catch (DaoException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	/**
+	 * 重新插入订单条目
+	 */
+	@Override
+	public boolean insertReOrderItem(OrderItem order,OrderItem orderItemQuery,List<OrderItemInfo> infoList) {
+		return  executeTransaction(action->{
+			try {
+				orderProcessDAO.insertReOrderItem(orderItemQuery);
+				
+				for(int i=0;i<infoList.size();i++) {
+					infoList.get(i).setItemId(orderItemQuery.getItemId());
+				}
+				orderProcessDAO.insertOrderItemInfoforList(infoList);//重新插入条目文件详情
+				
+				orderProcessDAO.deleteOrderItemByItemId(order.getItemId());//重新插入条目
+				orderProcessDAO.deleteOrderItemInfoByItemId(order.getItemId());//重新插入条目文件详情
+				
+				return true;
+			}
+			catch (Exception e) {
+				throw new TransactionRuntimeException("重新插入订单条目失败!",e);
+			}
+		});
+	}
+	
+	@Override
+	public boolean insertOrderItemInfoforList(List<OrderItemInfo> query) {
+		return  executeTransaction(action->{
+			try {
+				orderProcessDAO.insertOrderItemInfoforList(query);
+				return true;
+			}catch(Exception e) {
+				throw new TransactionRuntimeException("文件状态更新失败!",e);
+			}
+		});
+	}
+	
+	@Override
+	public boolean deleteOrderItemByItemId(Long id) {
+		return  executeTransaction(action->{
+			try {
+				orderProcessDAO.deleteOrderItemByItemId(id);
+				return true;
+			}catch(Exception e) {
+				throw new TransactionRuntimeException("删除订单条目失败!",e);
+			}
+		});
+	}
+	
+	
+	@Override
+	public boolean deleteOrderItemInfoByItemId(Long id) {
+		return  executeTransaction(action->{
+			try {
+				orderProcessDAO.deleteOrderItemInfoByItemId(id);
+				return true;
+			}catch(Exception e) {
+				throw new TransactionRuntimeException("删除订单条目文件详情失败!",e);
+			}
+		});
+	}
+	
+	
+	@Override
+	public boolean removeOrderById(Long OrderId) {
+		return  executeTransaction(action->{
+			try {
+				OrderItemInfo orderItemInfo = orderProcessDAO.selectItemInfoByOrderIdGroup(OrderId);
+				Long itemId = orderItemInfo.getItemId();
+				orderProcessDAO.deleteOrderById(OrderId);//删除订单
+				orderProcessDAO.deleteOrderItemByItemId(itemId);//删除订单条目
+				orderProcessDAO.deleteOrderItemInfoByItemId(itemId);//删除订单条目详情
+				return true;
+			}catch(Exception e) {
+				throw new TransactionRuntimeException("删除订单失败!",e);
+			}
+		});
+	}
+	
+}

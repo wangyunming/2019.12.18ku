@@ -1,0 +1,16 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+.Eject{ margin:auto; width:540px; min-height:396px; overflow:hidden; border-radius:5px; position:relative;}
+.Eject .success{height:30px; width:540px; position:absolute; background:#94ce02; color:#FFFFFF; text-align:center; line-height:30px; font-size:14px; display: none;}
+.Eject .fail{height:30px; width:540px; position:absolute; background:#e74c3c; color:#FFFFFF; text-align:center; line-height:30px; font-size:14px; display: none;}
+.Eject label{ font-size:14px; color:#a6a6a6; width:88px; text-align:right; display:inline-block;} 
+.Eject ul{ margin:30px 40px 0 40px; } 
+.Eject ul li{ margin-bottom:15px;}
+.Eject input{ width:120px; border:1px solid #dfdfdf; } 
+.Eject select{ width:284px; border:1px solid #dfdfdf; height: 30px;} 
+.Eject span{ color:#FF0000;margin-left:5px; font-weight:bold;}
+.Eject .save{ background:#fafafa; text-align:center; height:50px; padding-top:20px;}
+.block {margin:15px; background:#ffffff; border:1px solid #ebebeb; overflow:hidden;}
+.modal {width:530px; height:290px; display:none; border:5px solid #656565; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;-khtml-border-radius: 10px;}

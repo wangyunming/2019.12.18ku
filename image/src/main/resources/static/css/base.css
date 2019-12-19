@@ -1,0 +1,25 @@
+@charset "utf-8";
+/* CSS Document */
+
+/*背景颜色*/
+.bg00{ color:#000;} .bgff{ color:#fff;} .bgb8{ color:#b8b8b8;} .bgae{ color:#aebe42;} .b0d{ color:#0d9bd9;}
+
+/*边框*/
+.bts{ border-top-style:solid;} .bbs{ border-bottom-style:solid;} .bls{ border-left-style:solid;} .brs{ border-right-style:solid;}
+.btd{ border-top-style:dotted;} .bbd{ border-bottom-style:dotted;} .bld{ border-left-style:dotted;} .brd{ border-right-style:dotted;}
+.bs{ border-style:solid;} .bd{ border-style:dotted;} .bln {border-left:none;} .brn {border-right:none;}
+
+/*宽度*/
+.bw1{ border-width:1px;} .bw2{ border-width:2px;}
+/*颜色*/
+.cee0 { color:#ee0000} /*红色*/  .cb50{ color:#d90b19;} .cc00{ color:#cc0000;}
+.c0c6 { color:#2E54A5;}/*蓝色*/
+.cfb8 { color:#fb8614;}.cf60{ color:#ff6600;}/*橙色*/
+.cc{ color:#cccccc;} .c2{ color:#222222;} .c3{ color:#333333;} .c4{ color:#444444;} .c6{ color:#666666;} .c9{ color:#999999;} .c9a{ color:#9a9a9a;} .cf4 { color:#f4f4f4;}
+/*链接颜色*/
+a { color:#606060;}  a.s , a:hover { color:#B50000; text-decoration:none;}
+/*提示*/
+.bgfffbrffc { border:1px solid #ffcc7f; background:#ffffe5;}
+
+
+

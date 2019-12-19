@@ -1,0 +1,351 @@
+@charset "utf-8";
+/* CSS Document */
+/*--外部滑块--*/
+.bannerRelative {
+	position: relative;
+}
+
+.bannerRelative .banner_prev {
+	position: absolute;
+	width: 5.31%;
+	height: 100%;
+	text-align: center;
+	background-color: black;
+	filter: alpha(opacity = 40);
+	opacity: 0.4;
+	left: 0px;
+	top: 0px;
+	overflow: hidden;
+}
+
+.bannerRelative .banner_next {
+	position: absolute;
+	width: 5.31%;
+	height: 100%;
+	text-align: center;
+	background-color: black;
+	filter: alpha(opacity = 40);
+	opacity: 0.4;
+	right: 0px;
+	top: 0px;
+	overflow: hidden;
+}
+.middle-span{
+	width: 100%;
+	height:100%;
+	display:inline-block;
+	vertical-align:middle;
+}
+.middle-span .arrow-left{
+	position:absolute;
+	top:45%;
+	left:15%;
+	height: 10%;
+	vertical-align:middle;
+}
+.middle-span .arrow-right{
+	position:absolute;
+	top:45%;
+	right:15%;
+	height: 10%;
+	vertical-align:middle;
+}
+
+.unslider {
+	overflow: auto;
+	margin: 0;
+	padding: 0;
+}
+
+.unslider-wrap {
+	position: relative
+}
+
+.unslider-wrap.unslider-carousel li {
+	float: left
+}
+
+.unslider li, .unslider ol, .unslider ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	border: none
+}
+
+.unslider-arrow {
+	position: absolute;
+	left: 20px;
+	z-index: 2;
+	cursor: pointer
+}
+
+.unslider-arrow.next {
+	left: auto;
+	right: 20px
+}
+
+.unslider-nav {
+	background: #f7f7f7 none repeat scroll 0 0;
+}
+
+.unslider-nav ol {
+	list-style: none;
+	text-align: center;
+}
+
+.unslider-nav ol li {
+	display: inline-block;
+	width: 6px;
+	height: 6px;
+	margin: 0 4px;
+	background: transparent;
+	border-radius: 5px;
+	overflow: hidden;
+	text-indent: -999em;
+	border: 2px solid #fff;
+	cursor: pointer;
+}
+
+.unslider-nav ol li.unslider-active {
+	background: #fff;
+	cursor: default;
+}
+
+/*--内部滑块--*/
+/*--------------------------------------------------------公共css开始---------------------------------------------------------------------*/
+.mis-stage, .mis-slider, .mis-slide, .mis-container, .mis-container * {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+.mis-stage {
+	width: 89.38%; /*  Set stage width as desired */
+	text-align: center; /*  Center list navigation */
+	z-index:10;
+}
+
+.mis-slider {
+	position: relative;
+	overflow: hidden;
+	list-style: none;
+	overflow: visible;
+	height: 100%;
+	margin-top: 0;
+	z-index:20;
+}
+
+.mis-stage .mis-slider .mis-slide {
+	/*  Set width in pixels to restrict width of slides 
+                for multi-item slider, default is 100%
+                for single-item slider. Use padding to add space 
+                between slides */
+	padding: 40px;
+	display: block;
+	position: relative;
+	float: left;
+	overflow: visible !important;
+	margin-top: 0;
+	height: 100%;
+}
+.mis-slide {
+	z-index: 30;
+}
+
+.mis-slide.mis-current {
+	z-index: 40;
+}
+/*  Slide container - inserted around the contents
+                of each slide by the plugin */
+.mis-container {
+	display: block;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	vertical-align:middle;
+}
+
+
+.mis-nav-list li {
+	display: inline-block;
+	margin: 0 .25em;
+}
+
+.mis-nav-list li a {
+	display: block;
+	width: 11px;
+	height: 11px;
+	text-indent: 100%; /* Replace text */
+	overflow: hidden;
+	white-space: nowrap;
+	border: 1px solid #eee;
+	border-radius: 7px; /* Make items round */
+	opacity: .3;
+	-webkit-box-shadow: inset 0 0 2px #333;
+	box-shadow: inset 0 0 2px 2px #333;
+	margin: 0 3px;
+}
+
+.mis-nav-list li.mis-current a, .mis-nav-list li a:hover {
+	background: #333;
+}
+
+.mis-nav-buttons {
+	display: block;
+	position: absolute;
+	height: 0;
+	top: 33%;
+	opacity: 0.5;
+	z-index: 20;
+}
+
+.mis-nav-buttons a {
+	position: absolute;
+	color: #eee;
+	font-size: 0; /* Hide for browser except Android */
+	line-height: .01; /* 0 is inconsistent in Opera */
+	font-family: Verdana, Geneva, sans-serif;
+	font-weight: bold;
+	text-decoration: none;
+	text-indent: -9999px; /* Hide for Android */
+}
+
+.mis-nav-buttons a:hover {
+	color: #ccc;
+}
+
+.mis-nav-buttons a.mis-next {
+	left: auto;
+	right: 0;
+}
+
+.mis-nav-buttons a.mis-prev {
+	left: 0;
+}
+
+.mis-nav-buttons a.mis-prev:before, .mis-nav-buttons a.mis-next:after {
+	content:"\2039";
+	display: block;
+	font-size: 100px;
+	text-indent: 0;
+	color: rgb(188,15,60);
+	font-weight: 100;
+}
+
+.mis-nav-buttons a.mis-next:after {
+	content: "\203A";
+}
+
+/*--------------------------------------------------------公共css结束---------------------------------------------------------------------*/
+.mis-stage {
+	position: absolute;
+	overflow: hidden;
+	left: 5.31%;
+	top: 26.3%;
+}
+
+.mis-slider {
+	/*  Slider element does not need to be a specific height
+            Here we use it to create a stylish bar behind slides */
+    position: absolute;
+	margin-top: 0%;
+	height: 100%;
+}
+
+.mis-slider li a {
+	color: #666;
+	display: block;
+	text-align:center;
+	line-height: 100%;
+}
+
+.mis-slider li figcaption {
+	font-size: 1.125em;
+}
+
+.mis-slider li img {
+	/*  Make max-width of image a little less than width of slide
+                to avoid some browser shinking bugs */
+	background-color: white;
+	max-width: 400px;
+	/*  for really small screens make width 100% */
+	width: 100%;
+	/*  Make image round */
+	border-radius: 50%;
+	border: 5px solid rgba(255,255,255,0.4);
+	-moz-background-clip: border; /* Firefox 3.6 */
+	-webkit-background-clip: border; /* Safari 4? Chrome 6? */
+	background-clip: border-box; /* Firefox 4, Safari 5, Opera 10, IE 9 */
+	-moz-background-clip: padding; /* Firefox 3.6 */
+	-webkit-background-clip: padding; /* Safari 4? Chrome 6? */
+	background-clip: padding-box; /* Firefox 4, Safari 5, Opera 10, IE 9 */
+	-moz-background-clip: content; /* Firefox 3.6 */
+	-webkit-background-clip: content; /* Safari 4? Chrome 6? */
+	background-clip: content-box; /* Firefox 4, Safari 5, Opera 10, IE 9 */
+}
+
+.mis-nav-buttons a {
+	color: #fff;
+}
+
+.templateName {
+	position: absolute;
+	left: 44.95%;
+	top: 77.44%;
+    width: 10.1%;
+    height: 6.26%;
+    color:white;
+    font-size: 30px;
+    text-align: center;
+    line-height: 180%;
+    background: rgb(169,17,29);
+    cursor: pointer;
+    z-index:10;
+}
+
+.templateDesc {
+	position: absolute;
+	left: 40.21%;
+	bottom: 2.4%;
+    width: 19.58%;
+    height: 10.95%;
+    background: white;
+   	filter: alpha(opacity = 60);
+	opacity: 0.6;
+}
+.templateDescMargin {
+	position: absolute;
+	left: 41.21%;
+	bottom: 3.4%;
+    width: 17.58%;
+    height: 8.95%;
+    font-size: 15px;
+    font-weight:800;
+    color:white;
+    overflow: hidden;
+    text-align: center;
+}
+
+
+.bannerRelative .inner_banner_prev {
+	position: absolute;
+	width: 7%;
+	height: 7%;
+	text-align: center;
+	font-size: 100px;
+	color: rgb(213,5,67);
+	left: 37%;
+	top: 64%;
+}
+
+.bannerRelative .inner_banner_next {
+	position: absolute;
+	width: 7%;
+	height: 7%;
+	text-align: center;
+	font-size: 100px;
+	color: rgb(213,5,67);
+	right: 37%;
+	top: 64%;
+}

@@ -1,0 +1,5 @@
+@charset "utf-8";
+/* CSS Document */
+
+.I_step{ float:right; margin-top:20px;} .I_step ul li{ float:left; width:120px; text-align:center; color:#999; margin-top:8px;} .I_step .red{ color:#d90b19;}
+.I_step .pink{ color:#ffbfc3;}

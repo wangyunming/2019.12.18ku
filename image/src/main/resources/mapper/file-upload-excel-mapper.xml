@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.haoyin.image.mapper.FileUploadMapper">
+ 
+ 
+   <resultMap type="com.haoyin.image.entity.InitialExcelInfo" id="initialExcelInfoResult">
+    <id column="ID" property="id" />
+	<result column="EXCEL_INFO_ID" property="excelInfoId" />
+	<result column="CUSTOMER_NAME" property="customerName" />
+    <result column="ITEM_NO" property="itemNo" />
+    <result column="SMLPC" property="smlpc" />
+    <result column="COLOUR" property="colour" />
+    <result column="SIZE" property="size" />
+    <result column="CURRENCY" property="currency" />
+    <result column="UNIT_PRICE" property="unitPrice" />
+    <result column="SET_PRICE" property="setPrice" />
+    <result column="ORDER_QTY" property="orderQty" />
+    <result column="BAR_CODE" property="barCode" />
+    <result column="DESCRIPTION" property="description" />
+    <result column="PRODUCET_NAME" property="productName" />
+    <result column="TYPE" property="type" />
+    <result column="ART_NO" property="artNo" />
+    <result column="INTERNAL_CODE" property="internalCode" />
+    <result column="GRADE" property="grade" />
+    <result column="PRODUCT_STANDARD" property="productStandard" />
+    <result column="SECURITY_CATEGORY" property="securityCategory" />
+    <result column="CATEGORY" property="category" />
+	<result column="FABRICL_NAME_ONE" property="fabricNameOne" />
+	<result column="FABRICL_INFO_ONE" property="fabricInfoOne" />
+	<result column="FABRICL_REMARKS_ONE" property="fabricRemarksOne" />
+	<result column="FABRICL_NAME_TWO" property="fabricNameTwo" />
+	<result column="FABRICL_INFO_TWO" property="fabricInfoTwo" />
+	<result column="FABRICL_REMARKS_TWO" property="fabricRemarksTwo" />
+	<result column="FABRICL_NAME_THREE" property="fabricNameThree" />
+	<result column="FABRICL_INFO_THREE" property="fabricInfoThree" />
+	<result column="FABRICL_REMARKS_THREE" property="fabricRemarksThree" />
+	<result column="FABRICL_NAME_FOUR" property="fabricNameFour" />
+	<result column="FABRICL_INFO_FOUR" property="fabricInfoFour" />
+	<result column="FABRICL_REMARKS_FOUR" property="fabricRemarksFour" />
+	<result column="FABRICL_NAME_FIVE" property="fabricNameFive" />
+	<result column="FABRICL_INFO_FIVE" property="fabricInfoFive" />
+	<result column="FABRICL_REMARKS_FIVE" property="fabricRemarksFive" />
+	
+	<result column="FABRICL_NAME_SIX" property="fabricNameSix" />
+	<result column="FABRICL_INFO_SIX" property="fabricInfoSix" />
+	<result column="FABRICL_REMARKS_SIX" property="fabricRemarksSix" />
+	
+	<result column="FABRICL_NAME_SEVEN" property="fabricNameSeven" />
+	<result column="FABRICL_INFO_SEVEN" property="fabricInfoSeven" />
+	<result column="FABRICL_REMARKS_SEVEN" property="fabricRemarksSeven" />
+	
+	<result column="FABRICL_NAME_EIGHT" property="fabricNameEight" />
+	<result column="FABRICL_INFO_EIGHT" property="fabricInfoEight" />
+	<result column="FABRICL_REMARKS_EIGHT" property="fabricRemarksEight" />
+	
+	
+	
+	<result column="INSPECTOR" property="inspector" />
+	<result column="PLACE_OF_ORIGIN" property="placeOfOrigin" />
+	<result column="DISTRIBUTOR" property="distributor" />
+	<result column="LOCATION" property="location" />
+	<result column="LOCATION_INFO" property="locationInfo" />
+	<result column="PHONE" property="phone" />
+	<result column="POSTAL_CODE" property="postalCode" />
+	<result column="WASHING_INSTRUCTIONS" property="washingInstructions" />
+	<result column="DATE_OF_MANUFACTURE" property="dateOfManufacture" />
+	<result column="ITEM_NO_COLOUR_CURRENCY" property="ItemNoColourCurrency" />
+	<result column="ITEM_NO_COLOUR" property="itemNoColour" />
+	
+	<result column="FABRIC_STRING" property="fabricString" />
+	
+  </resultMap>
+ 
+ 
+   <select id="selectUserInfo" parameterType="Integer" resultType="com.haoyin.image.demo.DemoUser">
+    select * from DEMO_USER where age = #{age}
+  </select>
+ 
+ 
+ <insert id="insertExcelInfo" parameterType="com.haoyin.image.entity.ExcelInfo" useGeneratedKeys="true" flushCache="true">
+    <![CDATA[
+      INSERT INTO EXCEL_INFO (
+           FILE_NAME, ABSOLUTE_URL, RELATIVE_URL, UPLOAD_USER_ID,UPLOAD_TIME , FILE_TYPE,STATUS
+      ) VALUES (
+           #{fileName}, #{absoluteUrl}, #{relativeUrl}, #{uploadUserId},now(),#{fileType},0
+      )
+    ]]>
+    <selectKey keyProperty="id" order="AFTER" resultType="string">
+	  <![CDATA[SELECT LAST_INSERT_ID() AS ID]]>
+    </selectKey>
+  </insert>
+  
+  
+  <insert id="inserInitialInfo" parameterType="ArrayList" flushCache="true">
+	<![CDATA[ INSERT INTO INITIAL_EXCEL_INFO ( EXCEL_INFO_ID,CUSTOMER_NAME , ITEM_NO, SMLPC, COLOUR,SIZE,CURRENCY,UNIT_PRICE,SET_PRICE,ORDER_QTY, BAR_CODE,
+	DESCRIPTION,PRODUCET_NAME,TYPE,ART_NO,INTERNAL_CODE,GRADE,PRODUCT_STANDARD,SECURITY_CATEGORY,CATEGORY,FABRICL_NAME_ONE,FABRICL_INFO_ONE,FABRICL_REMARKS_ONE,
+	FABRICL_NAME_TWO,FABRICL_INFO_TWO,FABRICL_REMARKS_TWO,FABRICL_NAME_THREE,FABRICL_INFO_THREE,FABRICL_REMARKS_THREE,FABRICL_NAME_FOUR,FABRICL_INFO_FOUR,
+	FABRICL_REMARKS_FOUR,FABRICL_NAME_FIVE,FABRICL_INFO_FIVE,FABRICL_REMARKS_FIVE,
+	FABRICL_NAME_SIX,FABRICL_INFO_SIX,FABRICL_REMARKS_SIX,FABRICL_NAME_SEVEN,FABRICL_INFO_SEVEN,FABRICL_REMARKS_SEVEN,
+	FABRICL_NAME_EIGHT,FABRICL_INFO_EIGHT,FABRICL_REMARKS_EIGHT,
+	INSPECTOR,PLACE_OF_ORIGIN,DISTRIBUTOR,LOCATION,LOCATION_INFO,PHONE,POSTAL_CODE,
+	WASHING_INSTRUCTIONS,DATE_OF_MANUFACTURE,FABRIC_STRING ) VALUES ]]>
+    <foreach collection="list" item="r" separator="," >
+     	<![CDATA[( #{r.excelInfoId},#{r.customerName}, #{r.itemNo},  #{r.smlpc},#{r.colour}, #{r.size}, #{r.currency}, #{r.unitPrice}, #{r.setPrice},
+     	#{r.orderQty},#{r.barCode}, #{r.Description}, #{r.productName}, #{r.type},#{r.artNo},#{r.internalCode}, #{r.grade}, #{r.productStandard}, 
+     	#{r.securityCategory},#{r.category}, #{r.fabricNameOne}, #{r.fabricInfoOne}, #{r.fabricRemarksOne},#{r.fabricNameTwo}, 
+     	#{r.fabricInfoTwo}, #{r.fabricRemarksTwo}, #{r.fabricNameThree},
+     	#{r.fabricInfoThree}, #{r.fabricRemarksThree}, #{r.fabricNameFour}, #{r.fabricInfoFour},#{r.fabricRemarksFour},
+     	 #{r.fabricNameFive}, #{r.fabricInfoFive}, #{r.fabricRemarksFive},
+     	 #{r.fabricNameSix}, #{r.fabricInfoSix}, #{r.fabricRemarksSix},
+     	 #{r.fabricNameSeven}, #{r.fabricInfoSeven}, #{r.fabricRemarksSeven},
+     	 #{r.fabricNameEight}, #{r.fabricInfoEight}, #{r.fabricRemarksEight},
+     	 #{r.inspector},#{r.placeOfOrigin},#{r.distributor},#{r.location},
+     	 #{r.locationInfo},#{r.phone},#{r.postalCode},#{r.washingInstructions},#{r.dateOfManufacture},#{r.fabricString})]]>
+    </foreach>
+  </insert>
+
+
+
+   	<select id="selectExcelInitialInfo" parameterType="com.haoyin.image.entity.ExcelInfo" resultMap="initialExcelInfoResult">
+    SELECT ei.EXCEL_INFO_ID,ei.CUSTOMER_NAME , ei.ITEM_NO, ei.SMLPC, ei.COLOUR,ei.SIZE,ei.CURRENCY,ei.UNIT_PRICE,ei.SET_PRICE,ei.ORDER_QTY, ei.BAR_CODE,
+	ei.DESCRIPTION,ei.PRODUCET_NAME,ei.TYPE,ei.ART_NO,ei.INTERNAL_CODE,ei.GRADE,ei.PRODUCT_STANDARD,ei.SECURITY_CATEGORY,ei.CATEGORY,FABRICL_NAME_ONE,
+	ei.FABRICL_INFO_ONE,ei.FABRICL_REMARKS_ONE,ei.FABRICL_NAME_TWO,ei.FABRICL_INFO_TWO,ei.FABRICL_REMARKS_TWO,ei.FABRICL_NAME_THREE,ei.FABRICL_INFO_THREE,
+	ei.FABRICL_REMARKS_THREE,ei.FABRICL_NAME_FOUR,ei.FABRICL_INFO_FOUR,ei.FABRICL_REMARKS_FOUR,ei.FABRICL_NAME_FIVE,ei.FABRICL_INFO_FIVE,
+	ei.FABRICL_REMARKS_FIVE,ei.FABRICL_NAME_SIX,ei.FABRICL_INFO_SIX,ei.FABRICL_REMARKS_SIX,ei.FABRICL_NAME_SEVEN,ei.FABRICL_INFO_SEVEN,ei.FABRICL_REMARKS_SEVEN,
+	ei.FABRICL_NAME_EIGHT,ei.FABRICL_INFO_EIGHT,ei.FABRICL_REMARKS_EIGHT,
+	ei.INSPECTOR,ei.PLACE_OF_ORIGIN,ei.DISTRIBUTOR,ei.LOCATION,ei.LOCATION_INFO,ei.PHONE,ei.POSTAL_CODE,
+	ei.WASHING_INSTRUCTIONS,ei.DATE_OF_MANUFACTURE,ei.FABRIC_STRING,
+	concat(ei.ITEM_NO,IFNULL(ei.COLOUR,''),IFNULL(ei.CURRENCY,'')) as ITEM_NO_COLOUR_CURRENCY,concat(ei.ITEM_NO,IFNULL(ei.COLOUR,'')) as ITEM_NO_COLOUR
+    FROM EXCEL_INFO fi
+	INNER JOIN INITIAL_EXCEL_INFO ei ON fi.ID = ei.EXCEL_INFO_ID
+	<trim prefix="WHERE" prefixOverrides="AND |OR ">
+		      	<if test="id != null"><![CDATA[ AND fi.ID = #{id} ]]></if>
+		</trim>
+  	</select>
+
+
+ 
+</mapper>

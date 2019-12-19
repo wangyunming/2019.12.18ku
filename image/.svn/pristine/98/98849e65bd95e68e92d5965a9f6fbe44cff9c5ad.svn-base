@@ -1,0 +1,4 @@
+/** validate */
+input[type='text'].error, input[type='password'].error, textarea.error, select.error { border: 1px solid #d90b19; }
+label.error { color: #d90b19; padding: 4px;  width: 180px; display: inline-block;} /*display: inline-block;*/
+span .agree { border: 1px solid #fff; padding: 2px; margin: 0 8px 0px 0px; display: inline;}

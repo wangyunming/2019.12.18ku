@@ -1,0 +1,37 @@
+.pagination {
+	font-size: 90%;
+	float: right;
+	margin: 10px 8px 10px;
+}
+
+.pagination span, .pagination a {
+	border-radius: 2px; 
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+}
+
+.pagination a {
+	text-decoration: none;
+	border: solid 1px #aaa;
+	color: #666;
+}
+
+.pagination a,.pagination span {
+	display: block;
+	float: left;
+	padding: 0.3em 0.5em;
+	margin-right: 5px;
+	margin-bottom: 5px;
+}
+
+.pagination .current {
+	background: #aaa;
+	color: #fff;
+	border: solid 1px #aaa;
+}
+
+.pagination .current.prev,.pagination .current.next {
+	color: #999;
+	border-color: #ddd;
+	background: #fff;
+}

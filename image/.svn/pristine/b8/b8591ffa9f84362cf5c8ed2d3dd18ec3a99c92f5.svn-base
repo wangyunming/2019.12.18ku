@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cookie-config>
+
+	<cookie-group name="session">
+		<cookie name="sid" domain="localhost" path="/" desc="session id" httpOnly="true">
+			<convert>com.haoyin.web.cookie.convert.SessionIdConvert</convert>
+		</cookie>
+	</cookie-group>
+
+	<cookie-group name="login">
+		<hash class="com.haoyin.web.cookie.hash.LoginHash">
+			<cookie name="LH" domain="localhost" path="/" desc="消息摘要" httpOnly="true" />
+		</hash>
+		<cookie name="UID" domain="localhost" path="/" desc="登录账号ID" httpOnly="true">
+			<convert>com.haoyin.web.cookie.convert.UserIdConvert</convert>
+		</cookie>
+		<cookie name="LN" domain="localhost" path="/" desc="登录账号" />
+		<cookie name="UN" domain="localhost" path="/" desc="用户姓名" />
+		<cookie name="UL" domain="localhost" path="/" desc="用户级别"  httpOnly="true">
+				<convert>com.haoyin.web.cookie.convert.UserLevelConcert</convert>
+		</cookie>
+		<cookie name="UT" domain="localhost" path="/" desc="用户类型" httpOnly="true">
+			<convert>com.haoyin.web.cookie.convert.UserTypeConvert</convert>
+		</cookie>
+		<cookie name="LT" domain="localhost" path="/" desc="登录时间">
+			<convert>com.haoyin.web.cookie.convert.LoginTimeConvert</convert>
+		</cookie>
+		<cookie name="OI" domain="localhost" path="/" desc="机构ID" httpOnly="true">
+			<convert>com.haoyin.web.cookie.convert.LongCookieConverter</convert>
+		</cookie>
+		<cookie name="AG" domain="localhost" path="/" desc="代理登录状态" httpOnly="true">
+			<convert>com.haoyin.web.cookie.convert.LongCookieConverter</convert>
+		</cookie>
+	</cookie-group>
+
+	<!-- 购物车 -->
+	<cookie-group name="shopping-cart">
+		<cookie name="SC" domain="localhost" path="/" desc="用户购物车" httpOnly="true">
+			<convert>com.haoyin.web.cookie.convert.ShoppingCartConvert</convert>
+		</cookie>
+		<cookie name="SD" domain="localhost" path="/" desc="用户商品数量" httpOnly="true">
+			<convert>com.haoyin.web.cookie.convert.IntegerCookieConverter</convert>
+		</cookie>
+	</cookie-group>
+
+	<!-- 美乐家购物车 -->
+	<cookie-group name="m-shopping-cart">
+		<cookie name="MSC" domain="localhost" path="/" desc="用户购物车" httpOnly="true">
+			<convert>com.haoyin.web.cookie.convert.ShoppingCartConvert</convert>
+		</cookie>
+		<cookie name="MSD" domain="localhost" path="/" desc="用户商品数量" httpOnly="true">
+			<convert>com.haoyin.web.cookie.convert.IntegerCookieConverter</convert>
+		</cookie>
+	</cookie-group>
+
+
+	<!-- 防重复提交 TOKEN -->
+	<cookie-group name="refresh-token">
+		<cookie name="_T_" domain="localhost" path="/" desc="防重复提交" maxAge="18000" />
+	</cookie-group>
+ 
+</cookie-config>

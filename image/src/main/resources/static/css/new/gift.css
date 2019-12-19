@@ -1,0 +1,23 @@
+@charset "utf-8";
+/* CSS Document */
+
+.hy-gift{height: 590px; background-image: url("/default/images/new/gift-banner-bj.png");}
+.hy-gift > img{ width: 1200px; margin: auto; display: block;}
+.hy-gift-con{ background-color: #1c2254;}
+.hy-gift-con .gift-con-mian{ width: 930px; margin:auto; padding-bottom: 140px;}
+.hy-gift-con .gift-form{margin:auto;width: 750px; border-radius: 10px; background-color: #fff; position: relative;}
+.gift-form .form-title{ position: absolute; background-image: url("/default/images/new/gift-title.png"); width: 300px;
+height: 65px; font-size: 28px; line-height: 65px; text-align: center; color: #fff; margin-left: 225px; top: -5px; }
+
+.register{ width:440px; margin:auto; overflow:hidden; padding-top:125px; color:#999; }
+.area-item .input{ width: 398px; background-color:#f7f7f7; height:40px; margin-top:5px;}
+.area-item .input-error{ border-color:#d90b19; background-color:#fff2f3;}
+.area-item .error {color: #d90b19;display: inline-block;padding: 4px;}
+.area-item .w200{ width:238px;}
+.area-item .validate{ float:left; margin:6px 0 0 20px; cursor:pointer; width:120px; height:50px;}
+.area-item .get_code{height:50px; width:140px; line-height:50px; background: #d90b19; float:left; text-align:center; color: #fff;}
+.area-item .fail{background:#aaa; color:#fff;}
+.area-item .I_select{ width:410px; height:50px; margin-top:5px;}
+.w410{ width:410px; margin:30px 0 50px 0;}
+.area-item input,select{ color:#bbb;}
+.h100{ height:100px;}

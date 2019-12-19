@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.haoyin.image.mapper.UserProfileDAO">
+
+  <resultMap type="userProfile" id="UserProfileResult">
+    <id column="ID" property="id" />
+    <result column="USERNAME" property="username" />
+    <result column="DEPT_ID" property="deptId" />
+    <result column="DEPT" property="dept" />
+    <result column="POSITION" property="position" />
+    <result column="EMAIL" property="email" />
+    <result column="NAME" property="name" />
+    <result column="SEX" property="sex" />
+    <result column="BIRTHDAY" property="birthday" />
+    <result column="MOBILE" property="mobile"/>
+    <result column="PHONE" property="phone" />
+    <result column="PHOTO" property="photo"/>
+    <result column="COMPANY" property="company" />
+    <result column="SALT" property="salt" />
+    <result column="STATUS" property="status"/>
+    <result column="LAST_LOGIN_IP" property="lastLoginIp" />
+    <result column="LAST_LOGIN_TIME" property="lastLoginTime" />
+    <result column="GMT_CREATE" property="gmtCreate" />
+    <result column="BELONG_USER_ID" property="superior" />
+    <result column="BELONG_USER_NAME" property="superiorName" />
+    
+    <result column="SALARY" property="salary" />
+  </resultMap>
+
+  <insert id="saveUserLogin" parameterType="user" flushCache="true">
+    <![CDATA[
+      INSERT INTO USER ( USER_ID, USERNAME, PASSWORD, SALT, STATUS ) 
+      VALUES ( #{userId}, #{username}, #{password}, #{salt}, 1 )
+    ]]>
+  </insert>
+	<insert id="saveUserProfile" parameterType="userProfile" useGeneratedKeys="true" flushCache="true">
+    <![CDATA[
+      INSERT INTO USER_PROFILE (
+         USERNAME, POSITION, NAME, SEX,  SALT,COMPANY
+      ) VALUES (
+        #{username},  #{position}, #{name}, #{sex},
+         #{salt},#{company}
+      )
+    ]]>
+    <selectKey keyProperty="id" order="AFTER" resultType="long">
+	   <![CDATA[SELECT LAST_INSERT_ID() AS ID]]>
+    </selectKey>
+  </insert>
+  <update id="updateUser" parameterType="user" flushCache="true">
+	<![CDATA[ UPDATE USER ]]>
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="username != null"><![CDATA[ USERNAME = #{username}, ]]></if>
+      <if test="password != null"><![CDATA[ PASSWORD = #{password}, ]]></if>
+      <if test="salt != null"><![CDATA[ SALT = #{salt}, ]]></if>
+      <if test="status != null"><![CDATA[ STATUS = #{status}, ]]></if>
+    </trim>
+	<![CDATA[ WHERE USER_ID = #{userId} ]]>
+  </update>
+  
+	<select id="selectUserProfileByUserName" parameterType="string" resultMap="UserProfileResult">
+    <![CDATA[
+      SELECT pro.ID, pro.USERNAME, pro.POSITION, pro.NAME, pro.SEX,
+       pro.SALT, 
+      u.STATUS FROM USER_PROFILE pro 
+      INNER JOIN USER u ON u.USER_ID = pro.ID
+      WHERE pro.USERNAME = #{userName}
+    ]]>
+  </select>
+  
+  <select id="selectUserById" parameterType="long" resultMap="UserProfileResult">
+    <![CDATA[ SELECT ID, Name, SALT, STATUS FROM USER WHERE ID = #{userId} ]]>
+  </select>
+
+  <select id="selectUserByUsername" parameterType="string" resultMap="UserProfileResult">
+	<![CDATA[ SELECT ID, Name, Password, SALT, STATUS FROM USER WHERE Name = #{username} ]]>
+  </select>
+
+  <select id="selectUserByPhone" parameterType="string" resultMap="UserProfileResult">
+    <![CDATA[ 
+      SELECT u.USER_ID, u.USERNAME, u.PASSWORD, u.SALT, u.STATUS FROM USER u 
+      INNER JOIN USER_PROFILE pro ON pro.ID = u.USER_ID
+      WHERE pro.MOBILE = #{phone} 
+    ]]>
+  </select>
+  
+  <update id="updateUserProfile" parameterType="userProfile" flushCache="true">
+	<![CDATA[ UPDATE USER_PROFILE ]]>
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="password != null"><![CDATA[ PASSWORD = #{password}, ]]></if>
+      <if test="deptId != null"><![CDATA[ DEPT_ID = #{deptId}, ]]></if>
+      <if test="dept != null"><![CDATA[ DEPT = #{dept}, ]]></if>
+      <if test="position != null"><![CDATA[ POSITION = #{position}, ]]></if>
+      <if test="salary != null"><![CDATA[ SALARY = #{salary}, ]]></if>
+      <if test="email != null"><![CDATA[ EMAIL = #{email}, ]]></if>
+      <if test="name != null"><![CDATA[ NAME = #{name}, ]]></if>
+      <if test="sex != null"><![CDATA[ SEX = #{sex}, ]]></if>
+      <if test="phone != null"><![CDATA[ PHONE = #{phone}, ]]></if>
+      <if test="mobile != null"><![CDATA[ MOBILE = #{mobile}, ]]></if>
+      <if test="photo != null"><![CDATA[ PHOTO = #{photo}, ]]></if>
+      <if test="birthday != null"><![CDATA[ BIRTHDAY = #{birthday}, ]]></if>
+      <if test="company != null"><![CDATA[ COMPANY = #{company}, ]]></if>
+      <if test="lastLoginIp != null"><![CDATA[ LAST_LOGIN_IP = #{lastLoginIp}, ]]></if>
+      <if test="lastLoginTime != null"><![CDATA[ LAST_LOGIN_TIME = #{lastLoginTime}, ]]></if>
+      <if test="superior != null"><![CDATA[ BELONG_USER_ID = #{superior} ]]></if>
+    </trim>
+	<![CDATA[ WHERE ID = #{id} ]]>
+  </update>
+  <select id="findUserProfileById" parameterType="long" resultMap="UserProfileResult">
+    <![CDATA[
+      SELECT pro.ID, pro.USERNAME, pro.POSITION, pro.NAME, pro.SEX,pro.COMPANY,
+      pro.SALT
+      ,u.STATUS  FROM USER_PROFILE pro 
+      INNER JOIN USER u ON u.USER_ID = pro.ID
+      WHERE ID = #{id}
+    ]]>
+  </select>
+	
+</mapper>

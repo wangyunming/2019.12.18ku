@@ -1,0 +1,668 @@
+package com.haoyin.image.controller;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.haoyin.image.entity.CommodityType;
+import com.haoyin.image.entity.Delivery;
+import com.haoyin.image.entity.DeliveryQuery;
+import com.haoyin.image.entity.JSONResult;
+import com.haoyin.image.entity.Order;
+import com.haoyin.image.entity.OrderItem;
+import com.haoyin.image.entity.OrderItemInfo;
+import com.haoyin.image.entity.OrderQuery;
+import com.haoyin.image.entity.ShoppingCartItem;
+import com.haoyin.image.entity.UserProfile;
+import com.haoyin.image.service.LogisticService;
+import com.haoyin.image.service.OrderProcessService;
+import com.haoyin.image.service.OrderService;
+import com.haoyin.image.util.GUIDUtil;
+import com.haoyin.image.util.RowNumUtil;
+
+
+@Controller
+public class OrderProcessController {
+	
+	static Logger log = LoggerFactory.getLogger(OrderProcessController.class);
+	
+	static final String[] FILE_TYPES = new String[] { "xlsx", "xls"};
+
+	@Value("${localConfig.fileUploadPath}")
+	private String fileUploadPath;
+	
+	@Value("${localConfig.imageUploadPath}")
+	private String imageUploadPath;
+	
+	@Value("${localConfig.payImages}")
+	private String payImages;
+	
+	@Value("${localConfig.imageUploadPathRead}")
+	private String imageUploadPathRead;
+	
+	@Resource
+	LogisticService logisticService;
+	
+	@Autowired
+	private OrderProcessService orderProcessService; 
+
+	@Resource
+	OrderService  orderService; 
+	
+	
+	
+	public UserProfile getUser() {
+		return (UserProfile) SecurityUtils.getSubject().getSession().getAttribute("uus");
+	}
+	
+	/**
+	 * 我要下单  ----选择商品类别页面
+	 * @return
+	 */
+	@RequestMapping("/order/select-order-type.html")
+	public String selectOrderType(Model model){
+		DecimalFormat df = new DecimalFormat("0");
+		List<CommodityType> commodityTypeList =  orderProcessService.selectCommodityTypeList();	
+		Integer row = Integer.parseInt(df.format(Math.ceil(commodityTypeList.size()/3.00)));//判断它有几行
+		List<List<CommodityType>> commodityTypeListList = new ArrayList<>();
+		for(int i=0;i<row;i++) {
+			List<CommodityType> commodityS = new ArrayList<>();
+			for(int j=0;j<3;j++) {
+				if((i*3+j)==commodityTypeList.size()) {
+					break;
+				}
+				commodityS.add(commodityTypeList.get(i*3+j));
+			}
+			commodityTypeListList.add(commodityS);
+		}
+		model.addAttribute("commodityTypeList", commodityTypeListList);
+		return "screen/order/select-order-type";
+	}
+	
+	/**
+	 * 我要下单 ---- 上传订单文件页面
+	 * @return
+	 */
+	@RequestMapping("/order/order-file-upload.html")
+	public String orderFileUpload(Long id,Model model){
+		CommodityType query = new CommodityType();
+		query.setId(id);
+		CommodityType commodityType =  orderProcessService.selectCommodityTypeById(query);
+		model.addAttribute("commodityType", commodityType);
+		return "screen/order/order-file-upload";
+	}
+	
+	/**
+	 * 我要下单 ---- （不用）上传订单文件页面
+	 * @return
+	 */
+	@RequestMapping("/order/order-file-upload-no.html")
+	public String orderFileUploadNo(Long id,Model model){
+		CommodityType query = new CommodityType();
+		query.setId(id);
+		CommodityType commodityType =  orderProcessService.selectCommodityTypeById(query);
+		model.addAttribute("commodityType", commodityType);
+		return "screen/order/order-file-upload-no";
+	}
+	
+	/**
+	 * 我要下单 ---- 订单生成页面
+	 * @return
+	 */
+	@RequestMapping("/order/order-generation.html")
+	public String orderGenerate(){
+		return "screen/order/order-generation";
+	}
+	
+	
+	/**
+	 * 我要下单 ----上传订单文件
+	 * @param file
+	 * @return
+	 */
+	@RequestMapping(value = "/order/excel-order-upload", method = RequestMethod.POST)
+	public @ResponseBody JSONResult excelOrderUpload(@RequestParam(value = "file") MultipartFile file,@RequestParam (value = "type")String type) {
+		try {	
+				String oriFilename = file.getOriginalFilename();//文件名
+				String fileExt = FilenameUtils.getExtension(oriFilename).toLowerCase();//文件后缀
+				String saveUrl = fileUploadPath  +"/order"+ new SimpleDateFormat("/yyyy/MM/dd/").format(new Date()) + DateUtils.formatDate(Calendar.getInstance().getTime(), "yyyyMMddHHmmSS/") + GUIDUtil.generateRandon(8)+"."+fileExt;
+				// 如果文件夹不存在则创建
+	            File pathfile = new File(saveUrl);
+	            File path = pathfile.getParentFile();
+	            if (!path.exists()) {
+	            	path.mkdirs();
+	            }
+				File srcFile = new File(saveUrl);
+				FileUtils.copyInputStreamToFile(file.getInputStream(), srcFile);
+				
+				Workbook wb0; 
+				if("xls".equals(fileExt)){
+					POIFSFileSystem poifsFileSystem = new POIFSFileSystem(file.getInputStream());
+					wb0 = new HSSFWorkbook(poifsFileSystem);//2003
+	            }else if("xlsx".equals(fileExt)){
+	            	wb0 = new XSSFWorkbook(file.getInputStream());//2007
+	            }else{
+	            	wb0 = null;
+	            	JSONResult.error("不支持的文件类型: " + fileExt);
+					throw new RuntimeException("the file is too small, transfer failed.");       
+	            }
+
+				
+				 // 获取选项卡对象 第0个选项卡  
+				Sheet sht0 = wb0.getSheetAt(0);  
+				int rowNum = sht0.getLastRowNum();//总行数
+				rowNum = RowNumUtil.getRowNum(sht0);
+				Double quantity = 0.00;//数量
+				
+				if(type.equals("1")) {//当上传的是价格牌1(含set price)的模板时
+					for(int i=1;i<=rowNum;i++) {
+						if(sht0.getRow(i) != null) {
+				        	if(sht0.getRow(i).getCell(8) !=null && !(sht0.getRow(i).getCell(8)+"").equals("")) {
+								sht0.getRow(i).getCell(8).setCellType(Cell.CELL_TYPE_STRING);
+					        	quantity += Double.parseDouble(sht0.getRow(i).getCell(8)+"");
+				        	}
+						}
+			        }
+				}else if(type.equals("2")) {//当上传的是small 2019合格证的模板时
+					for(int i=1;i<=rowNum;i++) {
+						if(sht0.getRow(i) != null) {
+				        	if(sht0.getRow(i).getCell(3) !=null && !(sht0.getRow(i).getCell(3)+"").equals("")) {
+					        	sht0.getRow(i).getCell(3).setCellType(Cell.CELL_TYPE_STRING);
+					        	quantity += Double.parseDouble(sht0.getRow(i).getCell(3)+"");
+				        	}
+						}
+			        }
+				}else if(type.equals("4")) {//当上传的是价格牌1(不含set price)的模板时
+					for(int i=1;i<=rowNum;i++) {
+						if(sht0.getRow(i) != null) {
+				        	if(sht0.getRow(i).getCell(7) !=null && !(sht0.getRow(i).getCell(7)+"").equals("")) {
+								sht0.getRow(i).getCell(7).setCellType(Cell.CELL_TYPE_STRING);
+					        	quantity += Double.parseDouble(sht0.getRow(i).getCell(7)+"");
+				        	}
+						}
+			        }
+				}else if(type.equals("5")){//当上传的是fall 2019合格证的模板时
+					for(int i=1;i<=rowNum;i++) {
+						if(sht0.getRow(i) != null) {
+				        	if(sht0.getRow(i).getCell(3) !=null && !(sht0.getRow(i).getCell(3)+"").equals("")) {
+								sht0.getRow(i).getCell(3).setCellType(Cell.CELL_TYPE_STRING);
+					        	quantity += Double.parseDouble(sht0.getRow(i).getCell(3)+"");
+				        	}
+						}
+			        }
+				}else {
+					JSONResult.error("不支持的文件类型: " + fileExt);
+					throw new RuntimeException("the file is too small, transfer failed.");       
+				}
+		        
+		        JSONResult jsonResult = new JSONResult();
+		        jsonResult.setSuccess(true);
+		        HashMap<String, Object> fileObject = new HashMap<String, Object>();
+		        fileObject.put("fileName", oriFilename);//文件名称
+		        fileObject.put("fileUrl", saveUrl);//文件路径
+		        fileObject.put("quantity", quantity);//数量
+		        jsonResult.setObjects(fileObject);
+		        return jsonResult;
+		        
+		} catch (Exception e) {
+			log.error("Transfer file fail :", e);
+		}
+
+		return JSONResult.error("文件读取失败！请上传规定格式文件！");
+	}
+	
+	
+	
+	/**
+	 * 加入购物车操作
+	 */
+	@RequestMapping(value="/order/addShoppingCart",method = RequestMethod.POST)
+	public @ResponseBody JSONResult addShoppingCatr(@RequestBody ShoppingCartItem query,Model model) {
+		try {
+			JSONResult jsonResult = new JSONResult();
+			query.setUserId(getUser().getId());
+			jsonResult.setSuccess(orderProcessService.insertShoppingCartItem(query));
+			return jsonResult;
+		}catch(Exception e) {
+			log.error("加入购物车失败!");
+		}
+		return JSONResult.error("加入购物车失败!");
+	}
+	
+	
+	
+	/**
+	 * 我要下单 ---- 添加订单操作
+	 * @return
+	 */
+	@RequestMapping("/order/add-order.htm")
+	public String addOrder(Long deliveryId, Order order,String[] itemId,Model model,RedirectAttributes redirectAttributes){
+		Boolean result=orderProcessService.insertOrder(deliveryId, order,itemId);
+		if(order.getPayMode()==2) {//如果是线下支付方式，直接到订单列表
+			return "redirect:/order/ongoing-order.html";
+		}
+		if(result&&order.getPayMode()==3) {//如果网银支付，跳转到网银
+			OrderQuery orderQuery=new OrderQuery();
+			orderQuery.setOrderId(order.getId());
+			redirectAttributes.addAttribute("orderId", orderQuery.getOrderId());
+			return "redirect:/pay/yee-pay-new.html";
+		}
+		if(result){
+			OrderQuery orderQuery=new OrderQuery();
+			orderQuery.setOrderId(order.getId());
+			redirectAttributes.addAttribute("orderId", orderQuery.getOrderId());
+			return "redirect:/pay/direct-pay-new.html";
+		}
+		return "screen/order/order-generation";
+	}
+	
+	
+	
+	/**
+	 * 待支付 ----重新上传订单文件
+	 * @param file
+	 * @return
+	 */
+	@RequestMapping(value = "/order/excel-order-reUpload", method = RequestMethod.POST)
+	public @ResponseBody JSONResult excelOrderReUpload(@RequestParam(value = "file") MultipartFile file,@RequestParam (value = "itemId")String itemId,@RequestParam (value = "type")String type) {
+		try {	
+				OrderItem query = new OrderItem();
+				query.setItemId(Long.parseLong(itemId));
+				OrderItem order = orderProcessService.selectOrderByItemId(query);//根据条目ID查询订单信息
+				
+				String oriFilename = file.getOriginalFilename();
+				String fileExt = FilenameUtils.getExtension(oriFilename).toLowerCase();
+				String saveUrl = fileUploadPath  +"/order"+ new SimpleDateFormat("/yyyy/MM/dd/").format(new Date()) + DateUtils.formatDate(Calendar.getInstance().getTime(), "yyyyMMddHHmmSS/") + GUIDUtil.generateRandon(8)+"."+fileExt;
+				// 如果文件夹不存在则创建
+	            File pathfile = new File(saveUrl);
+	            File path = pathfile.getParentFile();
+	            if (!path.exists()) {
+	            	path.mkdirs();
+	            }
+				File srcFile = new File(saveUrl);
+				FileUtils.copyInputStreamToFile(file.getInputStream(), srcFile);
+				Workbook wb0; 
+				if("xls".equals(fileExt)){
+					POIFSFileSystem poifsFileSystem = new POIFSFileSystem(file.getInputStream());
+					wb0 = new HSSFWorkbook(poifsFileSystem);//2003
+	            }else if("xlsx".equals(fileExt)){
+	            	wb0 = new XSSFWorkbook(file.getInputStream());//2007
+	            }else{
+	            	wb0 = null;
+	            	JSONResult.error("不支持的文件类型: " + fileExt);
+					throw new RuntimeException("the file is too small, transfer failed.");       
+	            }
+
+
+				
+				
+				 // 获取选项卡对象 第0个选项卡  
+				Sheet sht0 = wb0.getSheetAt(0);  
+				int rowNum = sht0.getLastRowNum();//总行数
+				rowNum = RowNumUtil.getRowNum(sht0);
+				Double quantityTotal = 0.00;//数量
+				
+
+				List<OrderItemInfo> infoList = new ArrayList<>();
+				for(int j=1;j<=rowNum;j++) {
+					OrderItemInfo info = new OrderItemInfo();
+					//info.setItemId(orderItemList.get(i).getItemId());//条目ID
+					info.setCommodityId(order.getCommodityId());//商品ID
+					info.setCommodityName(order.getCommodityName());//商品名称
+					info.setBatch(oriFilename);//批次号(文件名)
+					if(order.getType() == 1) {//如果是吊牌文件
+						if(sht0.getRow(j) != null) {
+							info.setCommodityCode(sht0.getRow(j).getCell(1)==null?null:sht0.getRow(j).getCell(1)+"");//商品编号
+							info.setSize(sht0.getRow(j).getCell(4)==null?null:sht0.getRow(j).getCell(4)+"");//size
+							if(sht0.getRow(j).getCell(5) != null) {sht0.getRow(j).getCell(5).setCellType(Cell.CELL_TYPE_STRING);};
+							info.setCurrency(sht0.getRow(j).getCell(5)==null?null:sht0.getRow(j).getCell(5)+"");//币种
+							if(sht0.getRow(j).getCell(8) != null) {sht0.getRow(j).getCell(8).setCellType(Cell.CELL_TYPE_STRING);};
+							info.setNumber(sht0.getRow(j).getCell(8)==null?null:sht0.getRow(j).getCell(8)+"");//数量
+							info.setColor(sht0.getRow(j).getCell(3)==null?null:sht0.getRow(j).getCell(3)+"");//颜色
+							if(sht0.getRow(j).getCell(8) != null) {
+								quantityTotal += Double.parseDouble(sht0.getRow(j).getCell(8)+"");
+							}
+						}
+					}else if(order.getType() == 2) {//如果是Summer 2019合格证文件
+						if(sht0.getRow(j) != null) {
+							info.setCommodityCode(sht0.getRow(j).getCell(2)==null?null:sht0.getRow(j).getCell(2)+"");//商品编号
+							info.setSpec(sht0.getRow(j).getCell(5)==null?null:sht0.getRow(j).getCell(5)+"");//号型
+							if(sht0.getRow(j).getCell(6) != null) {sht0.getRow(j).getCell(6).setCellType(Cell.CELL_TYPE_STRING);};
+							info.setSize(sht0.getRow(j).getCell(6)==null?null:(sht0.getRow(j).getCell(6)+""));//size(内部码)
+							if(sht0.getRow(j).getCell(3) != null) {sht0.getRow(j).getCell(3).setCellType(Cell.CELL_TYPE_STRING);};
+							info.setNumber(sht0.getRow(j).getCell(3)==null?null:sht0.getRow(j).getCell(3)+"");//数量
+							info.setColor(sht0.getRow(j).getCell(11)==null?null:sht0.getRow(j).getCell(11)+"");//颜色
+							if(sht0.getRow(j).getCell(3) != null) {
+								quantityTotal += Double.parseDouble(sht0.getRow(j).getCell(3)+"");
+							}
+						}
+					}else if(order.getType() == 4) {//如果是吊牌2文件（不含set price）
+						info.setCommodityCode(sht0.getRow(j).getCell(1)==null?null:sht0.getRow(j).getCell(1)+"");//商品编号
+						info.setSize(sht0.getRow(j).getCell(4)==null?null:sht0.getRow(j).getCell(4)+"");//size
+						if(sht0.getRow(j).getCell(5) != null) {sht0.getRow(j).getCell(5).setCellType(Cell.CELL_TYPE_STRING);};
+						info.setCurrency(sht0.getRow(j).getCell(5)==null?null:sht0.getRow(j).getCell(5)+"");//币种
+						if(sht0.getRow(j).getCell(7) != null) {sht0.getRow(j).getCell(7).setCellType(Cell.CELL_TYPE_STRING);};
+						info.setNumber(sht0.getRow(j).getCell(7)==null?null:sht0.getRow(j).getCell(7)+"");//数量
+						info.setColor(sht0.getRow(j).getCell(3)==null?null:sht0.getRow(j).getCell(3)+"");//颜色
+						if(sht0.getRow(j).getCell(7) != null) {
+							quantityTotal += Double.parseDouble(sht0.getRow(j).getCell(7)+"");
+						}
+					}else if(order.getType() == 5) {//如果是fall 2019合格证文件
+						if(sht0.getRow(j) != null) {
+							info.setCommodityCode(sht0.getRow(j).getCell(2)==null?null:sht0.getRow(j).getCell(2)+"");//商品编号
+							info.setSpec(sht0.getRow(j).getCell(5)==null?null:sht0.getRow(j).getCell(5)+"");//号型
+							if(sht0.getRow(j).getCell(6) != null) {sht0.getRow(j).getCell(6).setCellType(Cell.CELL_TYPE_STRING);};
+							info.setSize(sht0.getRow(j).getCell(6)==null?null:(sht0.getRow(j).getCell(6)+""));//size(内部码)
+							if(sht0.getRow(j).getCell(3) != null) {sht0.getRow(j).getCell(3).setCellType(Cell.CELL_TYPE_STRING);};
+							info.setNumber(sht0.getRow(j).getCell(3)==null?null:sht0.getRow(j).getCell(3)+"");//数量
+							info.setColor(sht0.getRow(j).getCell(11)==null?null:sht0.getRow(j).getCell(11)+"");//颜色
+							if(sht0.getRow(j).getCell(3) != null) {
+								quantityTotal += Double.parseDouble(sht0.getRow(j).getCell(3)+"");
+							}
+						}
+					}
+					
+					info.setRePrice(order.getRePrice());//单价					
+					infoList.add(info);
+				}
+				
+				
+				OrderItem orderItemQuery = new OrderItem();
+				orderItemQuery.setOrderId(order.getOrderId());//订单ID
+				orderItemQuery.setCommodityId(order.getCommodityId());//商品ID
+				orderItemQuery.setCommodityName(order.getCommodityName());//商品名称
+				orderItemQuery.setNumber(quantityTotal+"");//数量
+				orderItemQuery.setRePrice(order.getRePrice());//单价
+				orderItemQuery.setFileName(oriFilename);//文件名称
+				orderItemQuery.setFileUrl(saveUrl);//文件路径
+				boolean boo = orderProcessService.insertReOrderItem(order,orderItemQuery,infoList);//重新插入订单条目
+				
+				List<OrderItemInfo> itemInfoList = orderService.selectItemInfoByOrderId(order.getOrderId());
+				// 根据条目ID去重
+		        Set<OrderItemInfo> itemSet = new TreeSet<>((o1, o2) -> o1.getItemId().compareTo(o2.getItemId()) );
+		        itemSet.addAll(itemInfoList);
+		        List<OrderItemInfo> a =  new ArrayList<>(itemSet);
+		        
+		        List<OrderItemInfo> infoListList = new ArrayList<OrderItemInfo>();
+		        for(int i=0;i<a.size();i++) {
+		        	OrderItemInfo info = new OrderItemInfo();
+		    		List<OrderItemInfo> infoList1 = new ArrayList<OrderItemInfo>();
+		        	for(int j=0;j<itemInfoList.size();j++) {
+		        		if(a.get(i).getItemId().equals(itemInfoList.get(j).getItemId())) {
+		        			infoList1.add(itemInfoList.get(j));
+		        		}
+		        	}
+		        	info.setInfoList(infoList1);
+		        	info.setItemId(a.get(i).getItemId());
+		        	infoListList.add(info);
+		        }
+		        
+		        JSONResult jsonResult = new JSONResult();
+		        jsonResult.setSuccess(boo);
+		        jsonResult.setObj(infoListList);
+		        return jsonResult;
+		        
+		} catch (Exception e) {
+			log.error("Transfer file fail :", e);
+		}
+
+		return JSONResult.error("文件读取失败！请上传规定格式文件！");
+	}
+	
+	
+	/**
+	 * 删除订单操作
+	 */
+	@ResponseBody
+	@RequestMapping("/order/remove-order.htm")
+	public JSONResult removeOrderById(Long orderId) {
+		boolean boo = orderProcessService.removeOrderById(orderId);//删除订单
+		JSONResult jsonResult = new JSONResult();
+		jsonResult.setSuccess(boo);
+		return jsonResult;
+	}
+	
+	
+	/**
+	 * 取消订单操作
+	 */
+	@ResponseBody
+	@RequestMapping("/order/cancel-order.htm")
+	public JSONResult cancelOrderById(Long orderId,Integer type) {
+		OrderQuery orderQuery=new OrderQuery();
+		orderQuery.setOrderId(orderId);
+		if(type==1) {//1为待接单  待接单可以退款
+			orderQuery.setScoutStatus(-1);//把状态改为-1退款
+		}else if(type==2) {//1为生产中  生产中不可以退款
+			orderQuery.setScoutStatus(-2);//把状态改为-2 （状态为退款  但是不退钱）
+		}
+		orderQuery.setRefundTime(com.haoyin.image.util.DateUtils.getDateTime());//申请退款时间
+		boolean result=orderService.updateOrderStatus(orderQuery);//更新订单状态
+		JSONResult jsonResult = new JSONResult();
+		jsonResult.setSuccess(result);
+		return jsonResult;
+	}
+	
+	
+	/**
+	 * 我要下单 ---- 订单生成页面
+	 * @return
+	 */
+	@RequestMapping("/ceshi.html")
+	public String ceshi(){
+		return "screen/order/ceshi";
+	}
+	
+	
+	/**
+	 * 上传支付凭证
+	 * @param file
+	 * @return
+	 */
+	@RequestMapping(value = "/image/upload-image", method = RequestMethod.POST)
+	public @ResponseBody JSONResult uploadImg(@RequestParam(value = "file") MultipartFile file,HttpServletRequest request) {
+		try {	
+				String oriFilename = file.getOriginalFilename();
+				String fileExt = FilenameUtils.getExtension(oriFilename).toLowerCase();
+				
+				String requestUrl = imageUploadPath;
+				String urll = new SimpleDateFormat("/yyyy/MM/dd/").format(new Date()) + DateUtils.formatDate(Calendar.getInstance().getTime(), "yyyyMMddHHmmSS/") + GUIDUtil.generateRandon(8)+"."+fileExt;
+				String saveUrl = requestUrl + payImages +  urll;///static/haoyin_static + payImages + 2019/5/08/1354543
+
+				
+				// 如果文件夹不存在则创建
+	            File pathfile = new File(saveUrl);//根据路径创建一个文件
+	            File paths = pathfile.getParentFile();//获取父文件
+	            if (!paths.exists()) {//如果父文件为空则创建
+	            	paths.mkdirs();
+	            }
+				File srcFile = new File(saveUrl);//根据路径创建一个文件
+				FileUtils.copyInputStreamToFile(file.getInputStream(), srcFile);//把这个文件copy到这个文件夹
+				Map<String, Object> data = new HashMap<String, Object>();
+				
+				data.put("imgName", oriFilename);
+				data.put("logo", imageUploadPathRead + payImages + urll);//http://test.static.haoyin.com + payImages + 2019/5/08/1354543
+				data.put("thumb", imageUploadPath + payImages + urll);//static/haoyin_static + /payImages + /2019/5/08/1354543
+				return JSONResult.success("SUCCESS", data);
+		        
+		} catch (Exception e) {
+			log.error("Transfer file fail :", e);
+		}
+
+		return JSONResult.error("文件读取失败！请上传规定格式文件！");
+	}
+	
+	
+	
+	
+	
+	@RequestMapping("/order/update-order-detail.html")
+	public String updateOrderDetail(Model model,String updateOrderId){
+		
+		DeliveryQuery query=new DeliveryQuery();
+		query.setUserId(getUser().getId());	
+
+		
+		Order  order=orderService.queryOrderById(Long.parseLong(updateOrderId));
+		
+
+		
+		List<OrderItemInfo> itemInfoList = orderService.selectItemInfoByOrderId(Long.parseLong(updateOrderId));
+		// 根据条目ID去重
+        Set<OrderItemInfo> itemSet = new TreeSet<>((o1, o2) -> o1.getItemId().compareTo(o2.getItemId()) );
+        itemSet.addAll(itemInfoList);
+        List<OrderItemInfo> a =  new ArrayList<>(itemSet);
+        
+        List<OrderItemInfo> infoList = new ArrayList<OrderItemInfo>();
+        for(int i=0;i<a.size();i++) {
+        	OrderItemInfo info = new OrderItemInfo();
+    		List<OrderItemInfo> infoList1 = new ArrayList<OrderItemInfo>();
+        	for(int j=0;j<itemInfoList.size();j++) {
+        		if(a.get(i).getItemId().equals(itemInfoList.get(j).getItemId())) {
+        			infoList1.add(itemInfoList.get(j));
+        		}
+        	}
+        	info.setInfoList(infoList1);
+        	info.setItemId(a.get(i).getItemId());
+        	infoList.add(info);
+        }
+		
+		
+		List<Delivery> deliveryList=logisticService.queryDeliveryList(query);	
+		model.addAttribute("deliveryList", deliveryList);
+		
+		model.addAttribute("order", order);
+		model.addAttribute("infoList", infoList);
+		return "screen/order/update-order-detail";
+	}
+	
+	
+	
+	/**
+	 * 重新上传订单操作  --ajax
+	 */
+	@ResponseBody
+	@RequestMapping("/order/offline-order-update.htm")
+	public JSONResult offlineOrderUpdate(String orderId,String imageUrl,String remrks,String imageName) {
+		OrderQuery orderQuery=new OrderQuery();
+		orderQuery.setOrderId(Long.parseLong(orderId.replace(",","")));
+		orderQuery.setRemark(remrks);
+		orderQuery.setOfflinePayStatus(0);
+		orderQuery.setImageUrl(imageUrl);
+		orderQuery.setImageName(imageName);
+		boolean result=orderService.updateOrderStatus(orderQuery);//更新订单状态
+		JSONResult jsonResult = new JSONResult();
+		jsonResult.setSuccess(result);
+		return jsonResult;
+	}
+	
+	
+	
+		//待支付的订单继续支付可以选择支付方式修改收货地址
+		@RequestMapping("/order/order-go-on-pay.html")
+		public String direct(Model model,String orderId){
+			Order  order=orderService.queryOrderById(Long.parseLong(orderId));
+			List<OrderItemInfo> itemInfoList = orderService.selectItemInfoByOrderId(Long.parseLong(orderId));
+			List<String> itemList = new ArrayList<>();
+			
+			// 根据条目ID去重
+	        Set<OrderItemInfo> itemSet = new TreeSet<>((o1, o2) -> o1.getItemId().compareTo(o2.getItemId()) );
+	        itemSet.addAll(itemInfoList);
+	        List<OrderItemInfo> a =  new ArrayList<>(itemSet);
+	        
+	        List<OrderItemInfo> infoList = new ArrayList<OrderItemInfo>();
+	        for(int i=0;i<a.size();i++) {
+	        	itemList.add(a.get(i).getItemId()+"");
+	        	OrderItemInfo info = new OrderItemInfo();
+	    		List<OrderItemInfo> infoList1 = new ArrayList<OrderItemInfo>();
+	        	for(int j=0;j<itemInfoList.size();j++) {
+	        		if(a.get(i).getItemId().equals(itemInfoList.get(j).getItemId())) {
+	        			infoList1.add(itemInfoList.get(j));
+	        		}
+	        	}
+	        	info.setInfoList(infoList1);
+	        	info.setItemId(a.get(i).getItemId());
+	        	infoList.add(info);
+	        }
+			
+			DeliveryQuery query=new DeliveryQuery();
+			query.setUserId(getUser().getId());	
+			List<Delivery> deliveryList=logisticService.queryDeliveryList(query);	
+			
+			model.addAttribute("deliveryList", deliveryList);
+			model.addAttribute("order", order);
+			model.addAttribute("infoList", infoList);
+			model.addAttribute("itemList", itemList);
+			return "screen/order/order-go-on-pay";
+		}
+		
+		
+		/**
+		 * 我要下单 ---- 添加订单操作
+		 * @return
+		 */
+		@RequestMapping("/order/go-on-add-order.htm")
+		public String goOnAddOrder(Long deliveryId, Order order,Model model,RedirectAttributes redirectAttributes){
+			Boolean result=orderProcessService.goOnInsertOrder(deliveryId, order);
+			if(order.getPayMode()==2) {//如果是线下支付方式，直接到订单列表
+				return "redirect:/order/ongoing-order.html";
+			}
+			if(result&&order.getPayMode()==3) {//如果网银支付，跳转到网银
+				OrderQuery orderQuery=new OrderQuery();
+				orderQuery.setOrderId(order.getId());
+				redirectAttributes.addAttribute("orderId", orderQuery.getOrderId());
+				return "redirect:/pay/yee-pay-new.html";
+			}
+			if(result){
+				OrderQuery orderQuery=new OrderQuery();
+				orderQuery.setOrderId(order.getId());
+				redirectAttributes.addAttribute("orderId", orderQuery.getOrderId());
+				return "redirect:/pay/direct-pay-new.html";
+			}
+			return "screen/order/order-generation";
+		}
+	
+	
+}

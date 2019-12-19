@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyin.image.mapper.OrderItemDAO" >
+		<resultMap type="orderItem" id="OrderItemResult">
+		<result column="ITEM_ID" property="itemId"/>
+		<result column="ORDER_ID" property="orderId"/>
+		<result column="COMMODITY_ID" property="commodityId"/>
+		<result column="COMMODITY_NAME" property="commodityName"/>
+		<result column="NUMBER" property="number"/>
+		<result column="RE_PRICE" property="rePrice"/>
+		<result column="FILE_NAME" property="fileName"/>
+		<result column="FILE_URL" property="fileUrl"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="TOTAL_PRICE" property="totalPrice"/>
+		<result column="IMAGE_URL" property="imageUrl" />
+		<result column="TYPE" property="type" />
+	</resultMap>
+	<sql id="selectSql">
+		<![CDATA[
+			SELECT oi.ITEM_ID, oi.ORDER_ID, oi.COMMODITY_ID, oi.COMMODITY_NAME, oi.NUMBER, oi.RE_PRICE,
+			oi.FILE_NAME, oi.FILE_URL,oi.USER_ID, oi.TOTAL_PRICE,oi.TOTAL_PRICE,i.TYPE,i.IMAGE_URL
+			FROM `order_item` oi
+			INNER JOIN commodity_type i ON oi.COMMODITY_ID=i.ID
+		]]>
+	</sql>
+	<select id="selectItemForListByOrderId" parameterType="long" resultMap="OrderItemResult">
+		<include refid="selectSql" />
+		<![CDATA[WHERE oi.ORDER_ID = #{orderId}]]>
+	</select>	
+
+</mapper>

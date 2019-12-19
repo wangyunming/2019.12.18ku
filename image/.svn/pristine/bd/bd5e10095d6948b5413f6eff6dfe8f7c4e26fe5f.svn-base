@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyin.image.mapper.TradeLogDAO" >
+	<resultMap type="tradeLog" id="TradeLog">
+		<id column="ID" property="id"/>
+		<result column="ORDER_ID" property="orderId" />
+		<result column="ORDER_NO" property="orderNo" />
+		<result column="TRADE_NO" property="tradeNo"/>
+		<result column="SUBJECT" property="subject"/>
+		<result column="TOTAL_FEE" property="totalFee"/>
+		<result column="TRADE_CREATE_TIME" property="tradeCreateTime"/>
+		<result column="SELLER" property="seller"/>
+		<result column="BUYER" property="buyer"/>
+		<result column="USER_ID" property="userId"/>
+		<result column="BUYER_NAME" property="buyerName"/>
+		<result column="TRADE_TYPE" property="tradeType"/>
+		<result column="PAY_TIME" property="paymentTime"/>
+		<result column="PAY_MODE" property="payMode"/>
+		<result column="PAY_BANK_CODE" property="bankCode"/>
+		<result column="TRADE_STATUS" property="tradeStatus"/>
+		<result column="REMARK" property="remark"/>
+		<result column="CREATE_GMT" property="createGmt"/>
+	</resultMap>
+	
+	<insert id="saveTradeLog" parameterType="tradeLog" flushCache="true">
+		<![CDATA[
+			INSERT INTO `TRADE_LOG` (
+				ORDER_ID, ORDER_NO, TRADE_NO, SUBJECT, TOTAL_FEE, TRADE_CREATE_TIME, SELLER, BUYER, USER_ID, 
+				BUYER_NAME, TRADE_TYPE, PAY_TIME, PAY_MODE, PAY_BANK_CODE, TRADE_STATUS, REMARK, CREATE_GMT
+			) VALUES (
+				#{orderId}, #{orderNo}, #{tradeNo}, #{subject}, #{totalFee}, #{tradeCreateTime}, #{seller}, #{buyer}, #{userId}, 
+				#{buyerName}, #{tradeType}, now(), #{payMode}, #{bankCode}, #{tradeStatus}, #{remark}, #{createGmt} 
+			)
+		]]>
+		<selectKey keyProperty="id" order="AFTER" resultType="long">
+			<![CDATA[SELECT LAST_INSERT_ID() AS ID]]>
+		</selectKey>
+	</insert>
+	
+	<select id="queryTradeLog" parameterType="tradeLogQuery" resultMap="TradeLog">
+		<![CDATA[
+			SELECT * FROM TRADE_LOG WHERE ORDER_NO = #{orderNo}
+		]]>
+	</select>
+
+</mapper>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoyin.image.mapper.UserRoleDAO">
+	<insert id="saveUserRoles" parameterType="ArrayList" flushCache="true">
+	<![CDATA[ INSERT INTO USER_ROLE ( USER_ID, ROLE_ID) VALUES ]]>
+    <foreach collection="list" item="r" separator="," >
+     	<![CDATA[(#{r.userId}, #{r.roleId})]]>
+    </foreach>
+  </insert>
+
+  <delete id="deleteUserRoles" parameterType="long">
+	<![CDATA[ DELETE FROM USER_ROLE WHERE USER_ID = #{userId} ]]>
+  </delete>
+</mapper>
